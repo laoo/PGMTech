@@ -1,13 +1,28 @@
 # IGS PGM Technical description
 
 * [Overview](#overview)
-* [Cartridge pinout](#cartridge-pinout)
 * [Memory map](#memory-map)
+* [Cartridge pinout](#cartridge-pinout)
 * [References](#references)
 
 ## Overview
 
-## Memory map
+IGS PolyGame Master is a cartridge based system.
+
+### Cartridge system
+
+ A cartridge consists of two Printed Circuit Boards.
+Top board contains:
+ * 22 bits of 16 bit `P` ROM with main CPU program
+ * 22 bits of 16 bit `T` ROM with tile graphics
+ * optionally ASIC used for protection/encryption
+
+Bottom board contains:
+ * 23 bits of 8 bit `M` ROM with audio data
+ * 22 bits of 16 bit `B` ROM with sprite masks 
+ * 24 bits of 15 bit `A` ROM with sprite pixel data
+
+## 68000 Memory map
 
 ## Cartridge pinout
 
