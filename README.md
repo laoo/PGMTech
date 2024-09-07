@@ -1,4 +1,4 @@
-# IGS PGM Technical description
+# IGS PGM from a programmer's perspective
 
 * [Overview](#overview)
 * [Memory map](#memory-map)
