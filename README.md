@@ -9,18 +9,22 @@
 
 IGS PolyGame Master is a cartridge based system.
 
+### Main board
+
+
+
 ### Cartridge system
 
  A cartridge consists of two Printed Circuit Boards.
 Top board contains:
- * 22 bits of 16 bit `P` ROM with main CPU program
- * 22 bits of 16 bit `T` ROM with tile graphics
+ * 22 bit address space of 16 bit `P` ROM with main CPU program
+ * 22 bit address space of 16 bit `T` ROM with tile graphics
  * optionally ASIC used for protection/encryption
 
 Bottom board contains:
- * 23 bits of 8 bit `M` ROM with audio data
- * 22 bits of 16 bit `B` ROM with sprite masks 
- * 24 bits of 15 bit `A` ROM with sprite pixel data
+ * 23 bit address space of 8 bit `M` ROM with audio data
+ * 22 bit address space of 16 bit `B` ROM with sprite masks 
+ * 24 bit address space of 15 bit `A` ROM with sprite pixel data
 
 ## 68000 Memory map
 
