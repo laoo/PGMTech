@@ -1,4 +1,4 @@
-# IGS PGM from a programmer's perspective
+# IGS PGM Tech Scroll
 
 * [Overview](#overview)
 * [Memory map](#memory-map)
@@ -11,9 +11,18 @@ IGS PolyGame Master is a cartridge based system.
 
 ### Main board
 
+From programmer's perspective important components located on motherboard are:
+* Main CPU Motorola MC68HC000 CPU clocked at 20 MHz
+* Secondary CPU for sound handling Zilog Z80 at 8.468 MHz
+* Custom video chip IGS 023
+* Sound chip Wave Front ICS2115
+* 128 kB of BIOS
+* 2 MB tile graphics ROM
+* 2 MB audio samples data ROM
+* 128 kB main CPU work RAM
+* 64 kB Z80 work RAM
 
-
-### Cartridge system
+### Cartridge
 
  A cartridge consists of two Printed Circuit Boards.
 Top board contains:
@@ -22,7 +31,7 @@ Top board contains:
  * optionally ASIC used for protection/encryption.
 
 Bottom board contains:
- * 8 bit `M` ROM with audio data with 24 bit address space (max 16 MB)
+ * 8 bit `M` ROM with audio samples data with 24 bit address space (max 16 MB)
  * 16 bit `B` ROM with sprite masks with 23 bit address space (max 16 MB)
  * 15 bit `A` ROM with sprite pixel data with 25 bit address space (max 64 MB)
 
