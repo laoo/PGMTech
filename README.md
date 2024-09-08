@@ -26,12 +26,13 @@ From programmer's perspective important components located on motherboard are:
 ### Cartridge
 
  A cartridge consists of two Printed Circuit Boards.
-Top board contains:
+
+[Top board](#top-prog-board) contains:
  * 16 bit [`P` ROM](#program-rom) with main CPU program with 23 bit address space (max 16 MB),
  * 16 bit `T` ROM with tile graphics with 23 bit address space (max 16 MB),
  * optionally ASIC used for protection/encryption.
 
-Bottom board contains:
+[Bottom board](#bottom-char-board) contains:
  * 8 bit `M` ROM with audio samples data with 24 bit address space (max 16 MB)
  * 16 bit `B` ROM with sprite pixel masks and pixel color offsets with 23 bit address space (max 16 MB)
  * 15 bit `A` ROM with sprite pixel color data with 25 bit address space (max 64 MB)
@@ -50,17 +51,17 @@ Sound chip has access to internal 2 MB audio samples ROM and external `M` ROM
 
 | address rage | mirroring | description |
 | :-- | :--: | :-- |
-| 0x000000-0x01ffff | 0x0e0000 | [internal BIOS](#internal-bios)
-| 0x100000-0x7fffff | - | [`P` program ROM](#program-rom)
-| 0x700006-0x700007 | - | [W/O irq4 ack](#irq4-ack)
-| 0x800000-0x81ffff | 0x0e0000 | [main work RAM](#main-work-ram)
-| 0x900000-0x907fff | 0x0f8000 | [video RAM](#video-ram)
-| 0xa00000-0xa01fff | 0x0fe000 | [palette RAM](#palette-ram)
-| 0xb00000-0xb0ffff | 0x0f0000 | [video registers](#video-registers)
-| 0xc00000-0xc0000f | 0x0e7ff0 | [Z80 interface and RTC regs](#z80-interface-and-rtc-regs)
-| 0xc08000-0xc08007 | 0x0e7ff8 | [I/O regs](#io-regs)
-| 0xc10000-0xc1ffff | 0x0e0000 | [Z80 RAM](#z80-ram)
-| 0xd00000-0xffffff |- | [`P` program ROM](#program-rom) ?
+| `0x000000-0x01ffff` | `0x0e0000` | [internal BIOS](#internal-bios)
+| `0x100000-0x7fffff` | - | [`P` program ROM](#program-rom)
+| `0x700006-0x700007` | - | [W/O irq4 ack](#irq4-ack)
+| `0x800000-0x81ffff` | `0x0e0000` | [main work RAM](#main-work-ram)
+| `0x900000-0x907fff` | `0x0f8000` | [video RAM](#video-ram)
+| `0xa00000-0xa01fff` | `0x0fe000` | [palette RAM](#palette-ram)
+| `0xb00000-0xb0ffff` | `0x0f0000` | [video registers](#video-registers)
+| `0xc00000-0xc0000f` | `0x0e7ff0` | [Z80 interface and RTC regs](#z80-interface-and-rtc-regs)
+| `0xc08000-0xc08007` | `0x0e7ff8` | [I/O regs](#io-regs)
+| `0xc10000-0xc1ffff` | `0x0e0000` | [Z80 RAM](#z80-ram)
+| `0xd00000-0xffffff` |- | [`P` program ROM](#program-rom) ?
 
 ### Internal BIOS
 
@@ -72,25 +73,69 @@ Machine starts up from internal BIOS. If cartridge is not inserted (or test butt
 
 | offset | size | description |
 | --: | :-- | :-- |
-| 0x000 | 0x04 | initial stack pointer |
-| 0x004 | 0x04 | program start address |
-| 0x070 | 0x04 | irq4, configured by cartridge, e.g. coin insertion |
-| 0x078 | 0x04 | irq6, VBL interrupt |
-| 0x200 | 0x20 | `IGS PGM PLATFORM GAMES\0\0\0\0\0\0\0\0\0\0` |
-| 0x220 | 0x10 | zero padded game name |
-| 0x230 | 0x0a | version string |
-| 0x23a | 0x04 | handler address |
-| 0x23e | 0x0a | date |
-| 0x248 | 0x08 | time |
+| `0x000` | `0x04` | initial stack pointer |
+| `0x004` | `0x04` | program start address |
+| `0x070` | `0x04` | [irq4](#irq4-ack), configured by cartridge, e.g. coin insertion |
+| `0x078` | `0x04` | [irq6](#irq6-vbl), VBL interrupt |
+| `0x200` | `0x20` | `IGS PGM PLATFORM GAMES\0\0\0\0\0\0\0\0\0\0` |
+| `0x220` | `0x10` | zero padded game name |
+| `0x230` | `0x0a` | version string |
+| `0x23a` | `0x04` | [initialization routine address](#initialization) |
+| `0x23e` | `0x0a` | date |
+| `0x248` | `0x08` | time |
 
+Each word of image file must have its bytes swapped.
+
+### initialization
+
+According to [snake](https://www.arcade-projects.com/threads/pgm-mvs-homebrew.24335/#post-378297) source code:
+```
+; initialization routine
+; very similar to the USER routine in Neo-Geo
+fn_initialize_fn
+	; same w/py2k2, photoy2k, kov2, dmnfront, probably others
+	; link    A6, #$0
+	; move.l  D2, -(A7)
+
+	; move.w ($8,A6), D2	; select what this function does...
+	; if (D2 == 0) initialize (set up) NV RAM
+	; if (D2 == 1) operator setting menu (soft dips)
+	; if (D2 == 2) seems to do nothing? (bra.s	lb_skip_initialize)
+	; if (D2 == 3) seems to do nothing?	(bra.s	lb_skip_initialize)
+	; if (D2 >= 4) skip initialize ?
+lb_skip_initialize
+	; move.l  (A7)+, D2
+	; unlk    A6
+	rts
+```
 
 ### IRQ4 Ack
 
+### IRQ6 VBL
+
 ### Main work RAM
+
+Work RAM usage:
+
+| address range | description |
+| :-- | :-- |
+| `0x800000-0x8009ff` | buffer for 256 sprites 10 bytes each |
+| `0x800a00-0x81ffff` | general usage |
 
 ### Video RAM
 
 ### Palette RAM
+
+| address range | description |
+| :-- | :-- |
+| `0xa00000-0xa007ff` | 32 * 2 bytes x 32 sprite palettes |
+| `0xa00800-0xa00fff` | 32 * 2 bytes x 32 background palettes |
+| `0xa01000-0xa011ff` | 16 * 2 bytes x 32 text palettes |
+| `0xa01200-0xa01fff` | unused palette RAM |
+
+#### Palette format
+
+Palette pixel format is RGB555: `xRRRRRGGGGGBBBBB`
 
 ### Video Registers
 
@@ -256,3 +301,4 @@ Machine starts up from internal BIOS. If cartridge is not inserted (or test butt
 * http://www.igspgm.com/iq132/data1.htm
 * https://github.com/mamedev/mame/tree/master/src/mame/igs
 * https://www.arcade-projects.com/threads/pgm-cartridge-pinout.13847/
+* https://www.arcade-projects.com/threads/pgm-mvs-homebrew.24335/
