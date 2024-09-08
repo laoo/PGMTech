@@ -64,7 +64,25 @@ Sound chip has access to internal 2 MB audio samples ROM and external `M` ROM
 
 ### Internal BIOS
 
+Machine starts up from internal BIOS. If cartridge is not inserted (or test button is pressed) it runs main menu. Without cartridge it is mirrored to first 8MB of address space. 
+
 ### Program ROM
+
+`P` ROM must start from first 128 entries of Motorola 68000 exception vector table and some mandatory fields.
+
+| offset | size | description |
+| --: | :-- | :-- |
+| 0x000 | 0x04 | initial stack pointer |
+| 0x004 | 0x04 | program start address |
+| 0x070 | 0x04 | irq4, configured by cartridge, e.g. coin insertion |
+| 0x078 | 0x04 | irq6, VBL interrupt |
+| 0x200 | 0x20 | `IGS PGM PLATFORM GAMES\0\0\0\0\0\0\0\0\0\0` |
+| 0x220 | 0x10 | zero padded game name |
+| 0x230 | 0x0a | version string |
+| 0x23a | 0x04 | handler address |
+| 0x23e | 0x0a | date |
+| 0x248 | 0x08 | time |
+
 
 ### IRQ4 Ack
 
