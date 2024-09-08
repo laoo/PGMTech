@@ -16,18 +16,18 @@ From programmer's perspective important components located on motherboard are:
 * Secondary CPU for sound handling Zilog Z80 at 8.468 MHz
 * Custom video chip IGS 023
 * Sound chip Wave Front ICS2115
-* 128 kB of BIOS
+* [128 kB of BIOS](#internal-bios)
 * 2 MB tile graphics ROM
 * 2 MB audio samples data ROM
-* 128 kB main CPU work RAM
-* 64 kB Z80 work RAM
-* video / palette RAM
+* [128 kB main CPU work RAM](#main-work-ram)
+* [64 kB Z80 work RAM](#z80-ram)
+* [video](#video-ram) / [palette RAM](#palette-ram)
 
 ### Cartridge
 
  A cartridge consists of two Printed Circuit Boards.
 Top board contains:
- * 16 bit `P` ROM with main CPU program with 23 bit address space (max 16 MB),
+ * 16 bit [`P` ROM](#program-rom) with main CPU program with 23 bit address space (max 16 MB),
  * 16 bit `T` ROM with tile graphics with 23 bit address space (max 16 MB),
  * optionally ASIC used for protection/encryption.
 
@@ -50,9 +50,9 @@ Sound chip has access to internal 2 MB audio samples ROM and external `M` ROM
 
 | address rage | mirroring | description |
 | :-- | :--: | :-- |
-| 0x000000-0x01ffff | 0x0e0000 | 128 kB internal BIOS
-| 0x100000-0x7fffff | - | `P` program ROM
-| 0x700006-0x700007 | - | W/O irq4 ack
+| 0x000000-0x01ffff | 0x0e0000 | [internal BIOS](#internal-bios)
+| 0x100000-0x7fffff | - | [`P` program ROM](#program-rom)
+| 0x700006-0x700007 | - | [W/O irq4 ack](#irq4-ack)
 | 0x800000-0x81ffff | 0x0e0000 | [main work RAM](#main-work-ram)
 | 0x900000-0x907fff | 0x0f8000 | [video RAM](#video-ram)
 | 0xa00000-0xa01fff | 0x0fe000 | [palette RAM](#palette-ram)
@@ -60,7 +60,13 @@ Sound chip has access to internal 2 MB audio samples ROM and external `M` ROM
 | 0xc00000-0xc0000f | 0x0e7ff0 | [Z80 interface and RTC regs](#z80-interface-and-rtc-regs)
 | 0xc08000-0xc08007 | 0x0e7ff8 | [I/O regs](#io-regs)
 | 0xc10000-0xc1ffff | 0x0e0000 | [Z80 RAM](#z80-ram)
-| 0xd00000-0xffffff |- | `P` program ROM ?
+| 0xd00000-0xffffff |- | [`P` program ROM](#program-rom) ?
+
+### Internal BIOS
+
+### Program ROM
+
+### IRQ4 Ack
 
 ### Main work RAM
 
