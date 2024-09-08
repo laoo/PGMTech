@@ -124,6 +124,12 @@ Work RAM usage:
 
 ### Video RAM
 
+| address range | description |
+| :-- | :-- |
+| `0x900000-0x903fff` | definition of 64*64 background layer, 4 bytes each tile |
+| `0x904000-0x905fff` | definition of 64*32 text layer, 4 bytes each character |
+| `0x907000-0x9077ff` | row scroll RAM |
+
 ### Palette RAM
 
 | address range | description |
@@ -132,10 +138,6 @@ Work RAM usage:
 | `0xa00800-0xa00fff` | 32 * 2 bytes x 32 background palettes |
 | `0xa01000-0xa011ff` | 16 * 2 bytes x 32 text palettes |
 | `0xa01200-0xa01fff` | unused palette RAM |
-
-#### Palette format
-
-Palette pixel format is RGB555: `xRRRRRGGGGGBBBBB`
 
 ### Video Registers
 
