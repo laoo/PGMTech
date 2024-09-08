@@ -201,6 +201,17 @@ Range `0xc10000-0xc1ffff` maps to Z80 RAM, that needs to be loaded by main CPU.
 
 ## Z80 memory map
 
+Whole Z80 address space is occupied by RAM, that is populated by msin CPU.
+
+### Z80 I/O map
+
+| address range | description |
+| :-- | :-- |
+| `0x8000-0x8003`| ICS 2115 Interface |
+| `0x8100-0x81ff`| sound latch 3 |
+| `0x8200-0x82ff`| sound latch 1 |
+| `0x8400-0x84ff`| sound latch 2 |
+
 ## Video chip operation
 
 ## Audio chip operation
