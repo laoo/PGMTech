@@ -48,6 +48,10 @@ Sound chip has access to internal 2 MB audio samples ROM and external `M` ROM
 
 ## 68000 Memory map
 
+| address rage | mirroring | description |
+| :--: | :--: | :--: |
+| 0x000000-0x01ffff | 0x0e0000 | 128 kB internal BIOS
+
 ## Cartridge pinout
 
 ### Top PROG board
