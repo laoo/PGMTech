@@ -141,6 +141,37 @@ Work RAM usage:
 
 ### Video Registers
 
+| address range | description |
+| :-- | :-- |
+| `0xb00000-0xb00fff` | buffer for 256 sprites 16 bytes each copied by sprite DMA |
+| `0xb01000-0xb0103f` | zoom table, 16 entries * 4 bytes each, W/O |
+| `0xb02000-0xb02001` | background scroll up |
+| `0xb03000-0xb03001` | background scroll left |
+| `0xb04000-0xb04001` | zoom flags ? |
+| `0xb05000-0xb05001` | text scroll up |
+| `0xb06000-0xb05001` | text scroll left |
+| `0xb07000-0xb07001` | screen scanline, R/O |
+| `0xb06000-0xb06001` | [control flags](#control-flags) |
+
+#### Control flags
+
+| mask | description |
+| :-- | :-- |
+| `0x0001` | sprite dma enable - pulse 0->1 to trigger |
+| `0x0002` | _nothing?_ |
+| `0x0004` | irq4 ack - pulse 0->1 to trigger |
+| `0x0008` | iqr6 ack - pulse 0->1 to trigger |
+| `0x0010` | _all games set this?_ |
+| `0x0060` | _all games except CAVE set this, but seems to serve no purpose when set?_ |
+| `0x0080` | _causes system to lose video synch?_ |
+| `0x0100` | _shows garbage on screen for all except background?_ |
+| `0x0200` | _disable everything except background layer?_ |
+| `0x0400` | _nothing?_ |
+| `0x0800` | disable text layer |
+| `0x1000` | disable background layer |
+| `0x2000` | disable high priority sprites |
+| `0xc000` | _nothing?_ |
+
 ### Z80 interface and RTC regs
 
 ### I/O regs
