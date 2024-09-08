@@ -174,9 +174,27 @@ Work RAM usage:
 
 ### Z80 interface and RTC regs
 
+| address range | description |
+| :-- | :-- |
+| `0xc00002-0xc00003`| sound latch 1 |
+| `0xc00004-0xc00005`| sound latch 2 |
+| `0xc00006-0xc00007`| calendar |
+| `0xc00008-0xc00009`| Z80 reset W/O |
+| `0xc0000a-0xc0000b`| Z80 control W/O |
+| `0xc0000c-0xc0000d`| sound latch 3 |
+
 ### I/O regs
 
+| address range | description |
+| :-- | :-- |
+| `0xc08000-0xc08001`| player 1 and 2 controls R/O |
+| `0xc08002-0xc08003`| player 3 and 4 controls R/O |
+| `0xc08004-0xc08005`| extra controls R/O |
+| `0xc08006-0xc08007`| dip switches R/O |
+
 ### Z80 RAM
+
+Range `0xc10000-0xc1ffff` maps to Z80 RAM, that needs to be loaded by main CPU.
 
 ## Cartridge pinout
 
