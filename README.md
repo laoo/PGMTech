@@ -1,7 +1,7 @@
 # IGS PGM Tech Scroll
 
 * [Overview](#overview)
-* [Memory map](#memory-map)
+* [68000 Memory map](#68000-memory-map)
 * [Cartridge pinout](#cartridge-pinout)
 * [References](#references)
 
@@ -21,6 +21,7 @@ From programmer's perspective important components located on motherboard are:
 * 2 MB audio samples data ROM
 * 128 kB main CPU work RAM
 * 64 kB Z80 work RAM
+* video / palette RAM
 
 ### Cartridge
 
@@ -32,8 +33,18 @@ Top board contains:
 
 Bottom board contains:
  * 8 bit `M` ROM with audio samples data with 24 bit address space (max 16 MB)
- * 16 bit `B` ROM with sprite masks with 23 bit address space (max 16 MB)
- * 15 bit `A` ROM with sprite pixel data with 25 bit address space (max 64 MB)
+ * 16 bit `B` ROM with sprite pixel masks and pixel color offsets with 23 bit address space (max 16 MB)
+ * 15 bit `A` ROM with sprite pixel color data with 25 bit address space (max 64 MB)
+
+### Logical components layout
+
+The main CPU has mapped into its address-space: BIOS, work RAM, video / palette RAM, Z80 interface, Z80 work RAM, I/O registers and external `P` ROM.
+
+Secondary CPU has access to its work RAM, main CPU interface and sound chip interface.
+
+Video chip has access to video / palette RAM, internal 2 MB of tile data ROM, and external `T`, `B` and `A` ROMs 
+
+Sound chip has access to internal 2 MB audio samples ROM and external `M` ROM
 
 ## 68000 Memory map
 
