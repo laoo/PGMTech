@@ -49,8 +49,18 @@ Sound chip has access to internal 2 MB audio samples ROM and external `M` ROM
 ## 68000 Memory map
 
 | address rage | mirroring | description |
-| :--: | :--: | :--: |
+| :-- | :--: | :-- |
 | 0x000000-0x01ffff | 0x0e0000 | 128 kB internal BIOS
+| 0x100000-0x7fffff | - | `P` program ROM
+| 0x700006-0x700007 | - | W/O irq4 ack
+| 0x800000-0x81ffff | 0x0e0000 | main work RAM
+| 0x900000-0x907fff | 0x0f8000 | video RAM
+| 0xa00000-0xa01fff | 0x0fe000 | palette RAM
+| 0xb00000-0xb0ffff | 0x0f0000 | video registers
+| 0xc00000-0xc0000f | 0x0e7ff0 | Z80 interface and RTC regs
+| 0xc08000-0xc08007 | 0x0e7ff8 | I/O regs
+| 0xc10000-0xc1ffff | 0x0e0000 | Z80 RAM
+| 0xd00000-0xffffff |- | `P` program ROM ?
 
 ## Cartridge pinout
 
