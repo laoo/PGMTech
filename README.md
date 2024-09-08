@@ -1,7 +1,10 @@
 # IGS PGM Tech Scroll
 
 * [Overview](#overview)
-* [68000 Memory map](#68000-memory-map)
+* [68000 memory map](#68000-memory-map)
+* [Z80 memory map](#z80-memory-map)
+* [Video chip operation](#video-chip-operation)
+* [Audio chip operation](#audio-chip-operation)
 * [Cartridge pinout](#cartridge-pinout)
 * [References](#references)
 
@@ -195,6 +198,12 @@ Work RAM usage:
 ### Z80 RAM
 
 Range `0xc10000-0xc1ffff` maps to Z80 RAM, that needs to be loaded by main CPU.
+
+## Z80 memory map
+
+## Video chip operation
+
+## Audio chip operation
 
 ## Cartridge pinout
 
