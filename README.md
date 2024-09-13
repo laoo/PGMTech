@@ -187,13 +187,55 @@ Work RAM usage:
 | `0xc0000c-0xc0000d`| sound latch 3 |
 
 ### I/O regs
+    $c08000 R/O |xxxxxxxxxxxxxxxx| Player 1 & 2 controls
+                 ||||||||||||||||_ P1 START
+                 |||||||||||||||__ P1 UP
+                 ||||||||||||||___ P1 DOWN
+                 |||||||||||||____ P1 LEFT
+                 ||||||||||||_____ P1 RIGHT
+                 |||||||||||______ P1 A
+                 ||||||||||_______ P1 B
+                 |||||||||________ P1 C
+                 ||||||||_________ P2 START
+                 |||||||__________ P2 UP
+                 ||||||___________ P2 DOWN
+                 |||||____________ P2 LEFT
+                 ||||_____________ P2 RIGHT
+                 |||______________ P2 A
+                 ||_______________ P2 B
+                 |________________ P2 C
 
-| address range | description |
-| :-- | :-- |
-| `0xc08000-0xc08001`| player 1 and 2 controls R/O |
-| `0xc08002-0xc08003`| player 3 and 4 controls R/O |
-| `0xc08004-0xc08005`| extra controls R/O |
-| `0xc08006-0xc08007`| dip switches R/O |
+    $c08002 R/O |xxxxxxxxxxxxxxxx| Player 3 & 4 controls
+
+    $c08004 R/O |xxxxxxxxxxxxxxxx| Extra controls
+                 ||||||||||||||||_ P1 COIN
+                 |||||||||||||||__ P2 COIN
+                 ||||||||||||||___ 
+                 |||||||||||||____ 
+                 ||||||||||||_____ 
+                 |||||||||||______ 
+                 ||||||||||_______ 
+                 |||||||||________ 
+                 ||||||||_________ P1 D
+                 |||||||__________ P2 D
+                 ||||||___________ 
+                 |||||____________ 
+                 ||||_____________ 
+                 |||______________ 
+                 ||_______________ 
+                 |________________ 
+
+    $c08006 R/O |........x...xxxx| Dip switches
+                         |   ||||_ Test mode (DOWN-ON)
+                         |   |||__ Music (DOWN-OFF)
+                         |   ||___ Voice (DOWN-OFF)
+                         |   |____ Free Play (DOWN-ON)
+                         |   |____ Stop Mode (DOWN-ON)
+                         |________ QC mode (DOWN-ON)
+
+All inputs are active low.
+
+With the QC mode dip switch set you can hold A+B when turning on the PGM to access the QC test menu. QC menu options are selected by pressing 1P START rather than 1P A as with the normal operator test menu. You can also hold B+C down in QC mode when turning on the PGM to boot the current cartridge in QC mode. Depending on the cartridge there may or may not be additional functionality.
 
 ### Z80 RAM
 
