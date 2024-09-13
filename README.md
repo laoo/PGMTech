@@ -10,16 +10,16 @@
 
 ## Overview
 
-IGS PolyGame Master is a cartridge based system.
+IGS PolyGame Master is a cartridge based system designed for use in an arcade cabinet, with a typical JAMMA pinout.
 
 ### Main board
 
-From programmer's perspective important components located on motherboard are:
-* Main CPU Motorola MC68HC000 CPU clocked at 20 MHz
-* Secondary CPU for sound handling Zilog Z80 at 8.468 MHz
-* Custom video chip IGS 023
-* Sound chip Wave Front ICS2115
-* [128 kB of BIOS](#internal-bios)
+From a programmer's perspective, the important components located on the motherboard are:
+* Main CPU; Motorola MC68HC000 CPU clocked at 20 MHz
+* Secondary CPU for sound; Zilog Z80 at 8.468 MHz
+* Custom video chip; IGS023
+* Sound chip; WaveFront ICS2115
+* [128 kB of BIOS program ROM (68000)](#internal-bios)
 * 2 MB tile graphics ROM
 * 2 MB audio samples data ROM
 * [128 kB main CPU work RAM](#main-work-ram)
@@ -33,7 +33,7 @@ From programmer's perspective important components located on motherboard are:
 [Top board](#top-prog-board) contains:
  * 16 bit [`P` ROM](#program-rom) with main CPU program with 23 bit address space (max 16 MB),
  * 16 bit `T` ROM with tile graphics with 23 bit address space (max 16 MB),
- * optionally ASIC used for protection/encryption.
+ * Different custom ASICs for copy protection purposes (to do)
 
 [Bottom board](#bottom-char-board) contains:
  * 8 bit `M` ROM with audio samples data with 24 bit address space (max 16 MB)
@@ -42,13 +42,13 @@ From programmer's perspective important components located on motherboard are:
 
 ### Logical components layout
 
-The main CPU has mapped into its address-space: BIOS, work RAM, video / palette RAM, Z80 interface, Z80 work RAM, I/O registers and external `P` ROM.
+The main CPU is memory-mapped into its address-space: BIOS, work RAM, video / palette RAM, Z80 interface, Z80 work RAM, I/O registers and external `P` ROM.
 
-Secondary CPU has access to its work RAM, main CPU interface and sound chip interface.
+The secondary CPU has access to its work RAM, main CPU interface and sound chip interface.
 
-Video chip has access to video / palette RAM, internal 2 MB of tile data ROM, and external `T`, `B` and `A` ROMs 
+The video chip has access to video / palette RAM, internal 2 MB of tile data ROM, and external `T`, `B` and `A` ROMs 
 
-Sound chip has access to internal 2 MB audio samples ROM and external `M` ROM
+The sound chip has access to internal 2 MB audio samples ROM and external `M` ROM
 
 ## 68000 Memory map
 
@@ -68,7 +68,7 @@ Sound chip has access to internal 2 MB audio samples ROM and external `M` ROM
 
 ### Internal BIOS
 
-Machine starts up from internal BIOS. If cartridge is not inserted (or test button is pressed) it runs main menu. Without cartridge it is mirrored to first 8MB of address space. 
+The machine starts up from its internal BIOS. If no cartridge is inserted (or the test button is pressed), the test menu is launched. Without a cartridge it is mirrored to the first 8MB of address space. 
 
 ### Program ROM
 
@@ -251,15 +251,15 @@ Work RAM usage:
 
 All inputs are active low.
 
-With the QC mode dip switch set you can hold A+B when turning on the PGM to access the QC test menu. QC menu options are selected by pressing 1P START rather than 1P A as with the normal operator test menu. You can also hold B+C down in QC mode when turning on the PGM to boot the current cartridge in QC mode. Depending on the cartridge there may or may not be additional functionality.
+With the QC mode dip switch set, you can hold A+B when turning on the PGM to access the QC test menu. QC menu options are selected by pressing 1P START rather than 1P A as with the normal operator test menu. You can also hold B+C down in QC mode when turning on the PGM to access cartridge-dependent additional test elements (eg. protection ASIC test, tile ROM test).
 
 ### Z80 RAM
 
-Range `0xc10000-0xc1ffff` maps to Z80 RAM, that needs to be loaded by main CPU.
+The range `0xc10000-0xc1ffff` maps to the Z80 RAM. The Z80 executes code from this 64 kB area, which can be uploaded by the 68000 as needed (eg. load additional sequence data)
 
 ## Z80 memory map
 
-Whole Z80 address space is occupied by RAM, that is populated by msin CPU.
+The whole Z80 address space is occupied by RAM, that is populated by main CPU.
 
 ### Z80 I/O map
 
