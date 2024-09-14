@@ -154,99 +154,120 @@ Work RAM usage:
 | `$b05000-$b05001` | [text](#foreground-text-layer) scroll up |
 | `$b06000-$b05001` | [text](#foreground-text-layer) scroll left |
 | `$b07000-$b07001` | [screen](#video-chip-operation) scanline, R/O |
-| `$b06000-$b06001` | [control flags](#control-flags) |
+| `$b06000-$b06001` | [control flags](#b06000-control-flags) |
 
-#### Control flags
+#### `$b06000` Control flags
 
 ```
-$b06000 R/W |..dcb.98765432.0| control flags
-               │││ ││││││││ └─ $0001: sprite dma enable - pulse 0->1 to trigger
-               │││ │││││││└─── $0004: irq4 ack - pulse 0->1 to trigger
-               │││ ││││││└──── $0008: iqr6 ack - pulse 0->1 to trigger
-               │││ │││││└───── $0010: ? all games set this
-               │││ │││└┴────── $0060: ? all games except CAVE set this, but seems to serve no purpose
-               │││ ││└──────── $0080: ? causes system to lose video synch
-               │││ │└───────── $0100: ? shows garbage on screen for all except background
-               │││ └────────── $0200: ? disable everything except background layer
-               ││└──────────── $0800: disable text layer
-               │└───────────── $1000: disable background layer
-               └────────────── $2000: disable high priority sprites
+..dcb.98765432.0
+  │││ ││││││││ └─ $0001: sprite dma enable - pulse 0->1 to trigger
+  │││ │││││││└─── $0004: irq4 ack - pulse 0->1 to trigger
+  │││ ││││││└──── $0008: iqr6 ack - pulse 0->1 to trigger
+  │││ │││││└───── $0010: ? all games set this
+  │││ │││└┴────── $0060: ? all games except CAVE set this, but seems to serve no purpose
+  │││ ││└──────── $0080: ? causes system to lose video synch
+  │││ │└───────── $0100: ? shows garbage on screen for all except background
+  │││ └────────── $0200: ? disable everything except background layer
+  ││└──────────── $0800: disable text layer
+  │└───────────── $1000: disable background layer
+  └────────────── $2000: disable high priority sprites
 ```
 ### Z80 interface and RTC regs
 
-| address range | description |
-| :-- | :-- |
-| `$c00002-$c00003`| sound latch 1 |
-| `$c00004-$c00005`| sound latch 2 |
-| `$c00006-$c00007`| calendar |
-| `$c00008-$c00009`| Z80 reset W/O |
-| `$c0000a-$c0000b`| Z80 control W/O |
-| `$c0000c-$c0000d`| sound latch 3 |
+| address range | | description |
+| :-- | :--: | :-- | 
+| `$c00002-$c00003`| R/W | sound latch 1 |
+| `$c00004-$c00005`| R/W | sound latch 2 |
+| `$c00006-$c00007`| R/W | calendar |
+| `$c00008-$c00009`| W/O | Z80 reset |
+| `$c0000a-$c0000b`| W/O | Z80 control |
+| `$c0000c-$c0000d`| R/W | sound latch 3 |
 
 ### I/O regs
-    $c08000 R/O |fedcba9876543210| Player 1 & 2 controls
-                 ||||||||||||||||_ P1 START
-                 |||||||||||||||__ P1 UP
-                 ||||||||||||||___ P1 DOWN
-                 |||||||||||||____ P1 LEFT
-                 ||||||||||||_____ P1 RIGHT
-                 |||||||||||______ P1 A
-                 ||||||||||_______ P1 B
-                 |||||||||________ P1 C
-                 ||||||||_________ P2 START
-                 |||||||__________ P2 UP
-                 ||||||___________ P2 DOWN
-                 |||||____________ P2 LEFT
-                 ||||_____________ P2 RIGHT
-                 |||______________ P2 A
-                 ||_______________ P2 B
-                 |________________ P2 C
 
-    $c08002 R/O |fedcba9876543210| Player 3 & 4 controls
-                 ||||||||||||||||_ P3 START
-                 |||||||||||||||__ P3 UP
-                 ||||||||||||||___ P3 DOWN
-                 |||||||||||||____ P3 LEFT
-                 ||||||||||||_____ P3 RIGHT
-                 |||||||||||______ P3 A
-                 ||||||||||_______ P3 B
-                 |||||||||________ P3 C
-                 ||||||||_________ P4 START
-                 |||||||__________ P4 UP
-                 ||||||___________ P4 DOWN
-                 |||||____________ P4 LEFT
-                 ||||_____________ P4 RIGHT
-                 |||______________ P4 A
-                 ||_______________ P4 B
-                 |________________ P4 C
-
-    $c08004 R/O |fedcba9876543210| Extra controls
-                 ||||||||||||||||_ P1 COIN
-                 |||||||||||||||__ P2 COIN
-                 ||||||||||||||___ P3 COIN
-                 |||||||||||||____ P4 COIN
-                 ||||||||||||_____ P1/2 TEST
-                 |||||||||||______ P1/2 SERVICE
-                 ||||||||||_______ P3/4 TEST
-                 |||||||||________ P3/4 SERVICE
-                 ||||||||_________ P1 D
-                 |||||||__________ P2 D
-                 ||||||___________ P3 D
-                 |||||____________ P4 D
-                 ||||_____________ RESET
-                 |||______________ RESERVED1
-                 ||_______________ RESERVED2
-                 |________________ RESERVED3
-
-    $c08006 R/O |........7..43210| Dip switches
-                         |  |||||_ Test mode (1-ON,0-OFF)
-                         |  ||||__ Music (0-ON,1-OFF)
-                         |  |||___ Voice (0-ON,1-OFF)
-                         |  ||____ Free Play (0-ON,1-OFF)
-                         |  |_____ Stop Mode (0-ON,1-OFF)
-                         |________ QC mode (1-ON,0-OFF)
+| address range | | description |
+| :-- | :--: | :-- | 
+| `$c08000-$c00001`| R/O | [Player 1 & 2 controls](#c08000-player-1--2-controls) |
+| `$c08002-$c00003`| R/O | [Player 3 & 4 controls](#c08002-player-3--4-controls) |
+| `$c08004-$c00005`| R/O | [Extra controls](#c08004-extra-controls) |
+| `$c08006-$c00007`| R/O | [Dip switches](#c08006-dip-switches) |
 
 All inputs are active low.
+
+#### `$c08000` Player 1 & 2 controls
+
+```
+fedcba9876543210
+│││││││││││││││└─ $0001: P1 START
+││││││││││││││└── $0002: P1 UP
+│││││││││││││└─── $0004: P1 DOWN
+││││││││││││└──── $0008: P1 LEFT
+│││││││││││└───── $0010: P1 RIGHT
+││││││││││└────── $0020: P1 A
+│││││││││└─────── $0040: P1 B
+││││││││└──────── $0080: P1 C
+│││││││└───────── $0100: P2 START
+││││││└────────── $0200: P2 UP
+│││││└─────────── $0400: P2 DOWN
+││││└──────────── $0800: P2 LEFT
+│││└───────────── $1000: P2 RIGHT
+││└────────────── $2000: P2 A
+│└─────────────── $4000: P2 B
+└──────────────── $8000: P2 C
+```
+
+#### `$c08002` Player 3 & 4 controls
+
+```
+fedcba9876543210
+│││││││││││││││└─ $0001: P3 START
+││││││││││││││└── $0002: P3 UP
+│││││││││││││└─── $0004: P3 DOWN
+││││││││││││└──── $0008: P3 LEFT
+│││││││││││└───── $0010: P3 RIGHT
+││││││││││└────── $0020: P3 A
+│││││││││└─────── $0040: P3 B
+││││││││└──────── $0080: P3 C
+│││││││└───────── $0100: P4 START
+││││││└────────── $0200: P4 UP
+│││││└─────────── $0400: P4 DOWN
+││││└──────────── $0800: P4 LEFT
+│││└───────────── $1000: P4 RIGHT
+││└────────────── $2000: P4 A
+│└─────────────── $4000: P4 B
+└──────────────── $8000: P4 C
+```
+
+#### `$c08004` Extra controls
+
+```
+...cba9876543210
+   ││││││││││││└─ $0001: P1 COIN
+   │││││││││││└── $0002: P2 COIN
+   ││││││││││└─── $0004: P3 COIN
+   │││││││││└──── $0008: P4 COIN
+   ││││││││└───── $0010: P1/2 TEST
+   │││││││└────── $0020: P1/2 SERVICE
+   ││││││└─────── $0040: P3/4 TEST
+   │││││└──────── $0080: P3/4 SERVICE
+   ││││└───────── $0100: P1 D
+   │││└────────── $0200: P2 D
+   ││└─────────── $0400: P3 D
+   │└──────────── $0800: P4 D
+   └───────────── $1000: RESET
+```
+
+#### `$c08006` Dip switches
+
+```
+........7..43210
+        │  ││││└─ $0001: Test mode (1-ON,0-OFF)
+        │  │││└── $0002: Music (0-ON,1-OFF)
+        │  ││└─── $0004: Voice (0-ON,1-OFF)
+        │  │└──── $0008: Free Play (0-ON,1-OFF)
+        │  └───── $0010: Stop Mode (0-ON,1-OFF)
+        └──────── $0080: QC mode (1-ON,0-OFF)
+```
 
 With the QC mode dip switch set, you can hold A+B when turning on the PGM to access the QC test menu. QC menu options are selected by pressing 1P START rather than 1P A as with the normal operator test menu. You can also hold B+C down in QC mode when turning on the PGM to access cartridge-dependent additional test elements (eg. protection ASIC test, tile ROM test).
 
