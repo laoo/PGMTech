@@ -188,7 +188,7 @@ Work RAM usage:
 
 ### I/O regs
     $c08000 R/O |fedcba9876543210| Player 1 & 2 controls
-                 ┃┃┃┃┃┃┃┃┃┃┃┃┃┃┃┗━ P1 START
+                 ║║║║║║║║║║║║║║║╚═ P1 START
                  ||||||||||||||└── P1 UP
                  |||||||||||||└─── P1 DOWN
                  ||||||||||||└──── P1 LEFT
