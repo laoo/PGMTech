@@ -54,17 +54,17 @@ The sound chip has access to internal 2 MB audio samples ROM and external `M` RO
 
 | address rage | mirroring | description |
 | :-- | :--: | :-- |
-| `0x000000-0x01ffff` | `0x0e0000` | [internal BIOS](#internal-bios)
-| `0x100000-0x7fffff` | - | [`P` program ROM](#program-rom)
-| `0x700006-0x700007` | - | [W/O irq4 ack](#irq4-ack)
-| `0x800000-0x81ffff` | `0x0e0000` | [main work RAM](#main-work-ram)
-| `0x900000-0x907fff` | `0x0f8000` | [video RAM](#video-ram)
-| `0xa00000-0xa01fff` | `0x0fe000` | [palette RAM](#palette-ram)
-| `0xb00000-0xb0ffff` | `0x0f0000` | [video registers](#video-registers)
-| `0xc00000-0xc0000f` | `0x0e7ff0` | [Z80 interface and RTC regs](#z80-interface-and-rtc-regs)
-| `0xc08000-0xc08007` | `0x0e7ff8` | [I/O regs](#io-regs)
-| `0xc10000-0xc1ffff` | `0x0e0000` | [Z80 RAM](#z80-ram)
-| `0xd00000-0xffffff` |- | [`P` program ROM](#program-rom) ?
+| `$000000-$01ffff` | `$0e0000` | [internal BIOS](#internal-bios)
+| `$100000-$7fffff` | - | [`P` program ROM](#program-rom)
+| `$700006-$700007` | - | [W/O irq4 ack](#irq4-ack)
+| `$800000-$81ffff` | `$0e0000` | [main work RAM](#main-work-ram)
+| `$900000-$907fff` | `$0f8000` | [video RAM](#video-ram)
+| `$a00000-$a01fff` | `$0fe000` | [palette RAM](#palette-ram)
+| `$b00000-$b0ffff` | `$0f0000` | [video registers](#video-registers)
+| `$c00000-$c0000f` | `$0e7ff0` | [Z80 interface and RTC regs](#z80-interface-and-rtc-regs)
+| `$c08000-$c08007` | `$0e7ff8` | [I/O regs](#io-regs)
+| `$c10000-$c1ffff` | `$0e0000` | [Z80 RAM](#z80-ram)
+| `$d00000-$ffffff` |- | [`P` program ROM](#program-rom) ?
 
 ### Internal BIOS
 
@@ -76,16 +76,16 @@ The machine starts up from its internal BIOS. If no cartridge is inserted (or th
 
 | offset | size | description |
 | --: | :-- | :-- |
-| `0x000` | `0x04` | initial stack pointer |
-| `0x004` | `0x04` | program start address |
-| `0x070` | `0x04` | [irq4](#irq4-ack), configured by cartridge, e.g. coin insertion |
-| `0x078` | `0x04` | [irq6](#irq6-vbl), VBL interrupt |
-| `0x200` | `0x20` | `IGS PGM PLATFORM GAMES\0\0\0\0\0\0\0\0\0\0` |
-| `0x220` | `0x10` | zero padded game name |
-| `0x230` | `0x0a` | version string |
-| `0x23a` | `0x04` | [initialization routine address](#initialization) |
-| `0x23e` | `0x0a` | date |
-| `0x248` | `0x08` | time |
+| `$000` | `$04` | initial stack pointer |
+| `$004` | `$04` | program start address |
+| `$070` | `$04` | [irq4](#irq4-ack), configured by cartridge, e.g. coin insertion |
+| `$078` | `$04` | [irq6](#irq6-vbl), VBL interrupt |
+| `$200` | `$20` | `IGS PGM PLATFORM GAMES\0\0\0\0\0\0\0\0\0\0` |
+| `$220` | `$10` | zero padded game name |
+| `$230` | `$0a` | version string |
+| `$23a` | `$04` | [initialization routine address](#initialization) |
+| `$23e` | `$0a` | date |
+| `$248` | `$08` | time |
 
 Each word of image file must have its bytes swapped.
 
@@ -122,69 +122,66 @@ Work RAM usage:
 
 | address range | description |
 | :-- | :-- |
-| `0x800000-0x8009ff` | buffer for 256 sprites 10 bytes each |
-| `0x800a00-0x81ffff` | general usage |
+| `$800000-$8009ff` | buffer for 256 sprites 10 bytes each |
+| `$800a00-$81ffff` | general usage |
 
 ### Video RAM
 
 | address range | description |
 | :-- | :-- |
-| `0x900000-0x903fff` | definition of 64*64 [background layer](#background-tile-layer), 4 bytes each tile |
-| `0x904000-0x905fff` | definition of 64*32 [text layer](#foreground-text-layer), 4 bytes each character |
-| `0x907000-0x9077ff` | row scroll RAM |
+| `$900000-$903fff` | definition of 64*64 [background layer](#background-tile-layer), 4 bytes each tile |
+| `$904000-$905fff` | definition of 64*32 [text layer](#foreground-text-layer), 4 bytes each character |
+| `$907000-$9077ff` | row scroll RAM |
 
 ### Palette RAM
 
 | address range | description |
 | :-- | :-- |
-| `0xa00000-0xa007ff` | 32 * 2 bytes x 32 [sprite](#sprites-layer) palettes |
-| `0xa00800-0xa00fff` | 32 * 2 bytes x 32 [background](#background-tile-layer) palettes |
-| `0xa01000-0xa011ff` | 16 * 2 bytes x 32 [text](#foreground-text-layer) palettes |
-| `0xa01200-0xa01fff` | unused palette RAM |
+| `$a00000-$a007ff` | 32 * 2 bytes x 32 [sprite](#sprites-layer) palettes |
+| `$a00800-$a00fff` | 32 * 2 bytes x 32 [background](#background-tile-layer) palettes |
+| `$a01000-$a011ff` | 16 * 2 bytes x 32 [text](#foreground-text-layer) palettes |
+| `$a01200-$a01fff` | unused palette RAM |
 
 ### Video Registers
 
 | address range | description |
 | :-- | :-- |
-| `0xb00000-0xb00fff` | buffer for 256 sprites 16 bytes each copied by sprite DMA |
-| `0xb01000-0xb0103f` | zoom table, 16 entries * 4 bytes each, W/O |
-| `0xb02000-0xb02001` | [background](#background-tile-layer) scroll up |
-| `0xb03000-0xb03001` | [background](#background-tile-layer) scroll left |
-| `0xb04000-0xb04001` | zoom flags ? |
-| `0xb05000-0xb05001` | [text](#foreground-text-layer) scroll up |
-| `0xb06000-0xb05001` | [text](#foreground-text-layer) scroll left |
-| `0xb07000-0xb07001` | [screen](#video-chip-operation) scanline, R/O |
-| `0xb06000-0xb06001` | [control flags](#control-flags) |
+| `$b00000-$b00fff` | buffer for 256 sprites 16 bytes each copied by sprite DMA |
+| `$b01000-$b0103f` | zoom table, 16 entries * 4 bytes each, W/O |
+| `$b02000-$b02001` | [background](#background-tile-layer) scroll up |
+| `$b03000-$b03001` | [background](#background-tile-layer) scroll left |
+| `$b04000-$b04001` | zoom flags ? |
+| `$b05000-$b05001` | [text](#foreground-text-layer) scroll up |
+| `$b06000-$b05001` | [text](#foreground-text-layer) scroll left |
+| `$b07000-$b07001` | [screen](#video-chip-operation) scanline, R/O |
+| `$b06000-$b06001` | [control flags](#control-flags) |
 
 #### Control flags
 
-| mask | description |
-| :-- | :-- |
-| `0x0001` | sprite dma enable - pulse 0->1 to trigger |
-| `0x0002` | _nothing?_ |
-| `0x0004` | irq4 ack - pulse 0->1 to trigger |
-| `0x0008` | iqr6 ack - pulse 0->1 to trigger |
-| `0x0010` | _all games set this?_ |
-| `0x0060` | _all games except CAVE set this, but seems to serve no purpose when set?_ |
-| `0x0080` | _causes system to lose video synch?_ |
-| `0x0100` | _shows garbage on screen for all except background?_ |
-| `0x0200` | _disable everything except background layer?_ |
-| `0x0400` | _nothing?_ |
-| `0x0800` | disable text layer |
-| `0x1000` | disable background layer |
-| `0x2000` | disable high priority sprites |
-| `0xc000` | _nothing?_ |
-
+```
+$b06000 R/W |..dcb.98765432.0| control flags
+               │││ ││││││││ └─ $0001: sprite dma enable - pulse 0->1 to trigger
+               │││ │││││││└─── $0004: irq4 ack - pulse 0->1 to trigger
+               │││ ││││││└──── $0008: iqr6 ack - pulse 0->1 to trigger
+               │││ │││││└───── $0010: ? all games set this
+               │││ │││└┴────── $0060: ? all games except CAVE set this, but seems to serve no purpose
+               │││ ││└──────── $0080: ? causes system to lose video synch
+               │││ │└───────── $0100: ? shows garbage on screen for all except background
+               │││ └────────── $0200: ? disable everything except background layer
+               ││└──────────── $0800: disable text layer
+               │└───────────── $1000: disable background layer
+               └────────────── $2000: disable high priority sprites
+```
 ### Z80 interface and RTC regs
 
 | address range | description |
 | :-- | :-- |
-| `0xc00002-0xc00003`| sound latch 1 |
-| `0xc00004-0xc00005`| sound latch 2 |
-| `0xc00006-0xc00007`| calendar |
-| `0xc00008-0xc00009`| Z80 reset W/O |
-| `0xc0000a-0xc0000b`| Z80 control W/O |
-| `0xc0000c-0xc0000d`| sound latch 3 |
+| `$c00002-$c00003`| sound latch 1 |
+| `$c00004-$c00005`| sound latch 2 |
+| `$c00006-$c00007`| calendar |
+| `$c00008-$c00009`| Z80 reset W/O |
+| `$c0000a-$c0000b`| Z80 control W/O |
+| `$c0000c-$c0000d`| sound latch 3 |
 
 ### I/O regs
     $c08000 R/O |fedcba9876543210| Player 1 & 2 controls
@@ -255,7 +252,7 @@ With the QC mode dip switch set, you can hold A+B when turning on the PGM to acc
 
 ### Z80 RAM
 
-The range `0xc10000-0xc1ffff` maps to the Z80 RAM. The Z80 executes code from this 64 kB area, which can be uploaded by the 68000 as needed (eg. load additional sequence data)
+The range `$c10000-$c1ffff` maps to the Z80 RAM. The Z80 executes code from this 64 kB area, which can be uploaded by the 68000 as needed (eg. load additional sequence data)
 
 ## Z80 memory map
 
@@ -265,10 +262,10 @@ The whole Z80 address space is occupied by RAM, that is populated by main CPU.
 
 | address range | description |
 | :-- | :-- |
-| `0x8000-0x8003`| ICS 2115 Interface |
-| `0x8100-0x81ff`| sound latch 3 |
-| `0x8200-0x82ff`| sound latch 1 |
-| `0x8400-0x84ff`| sound latch 2 |
+| `$8000-$8003`| ICS 2115 Interface |
+| `$8100-$81ff`| sound latch 3 |
+| `$8200-$82ff`| sound latch 1 |
+| `$8400-$84ff`| sound latch 2 |
 
 ## Video chip operation
 
