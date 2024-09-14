@@ -20,7 +20,7 @@ From a programmer's perspective, the important components located on the motherb
 * Custom video chip; IGS023
 * Sound chip; WaveFront ICS2115
 * [128 kB of BIOS program ROM (68000)](#internal-bios)
-* 2 MB tile graphics ROM
+* [2 MB tile graphics ROM](#text--tiles-t-rom)
 * 2 MB audio samples data ROM
 * [128 kB main CPU work RAM](#main-work-ram)
 * [64 kB Z80 work RAM](#z80-ram)
@@ -32,13 +32,13 @@ From a programmer's perspective, the important components located on the motherb
 
 [Top board](#top-prog-board) contains:
  * 16 bit [`P` ROM](#program-rom) with main CPU program with 23 bit address space (max 16 MB),
- * 16 bit `T` ROM with tile graphics with 23 bit address space (max 16 MB),
+ * 16 bit [`T` ROM](#text--tiles-t-rom) with tile graphics with 23 bit address space (max 16 MB),
  * Different custom ASICs for copy protection purposes (to do)
 
 [Bottom board](#bottom-char-board) contains:
  * 8 bit `M` ROM with audio samples data with 24 bit address space (max 16 MB)
- * 16 bit `B` ROM with sprite pixel masks and pixel color offsets with 23 bit address space (max 16 MB)
- * 15 bit `A` ROM with sprite pixel color data with 25 bit address space (max 64 MB)
+ * 16 bit [`B` ROM](#sprite-bitmask-b-rom) with sprite pixel masks and pixel color offsets with 23 bit address space (max 16 MB)
+ * 15 bit [`A` ROM](#sprite-color-a-rom) with sprite pixel color data with 25 bit address space (max 64 MB)
 
 ### Logical components layout
 
@@ -46,7 +46,7 @@ The main CPU is memory-mapped into its address-space: BIOS, work RAM, video / pa
 
 The secondary CPU has access to its work RAM, main CPU interface and sound chip interface.
 
-The video chip has access to video / palette RAM, internal 2 MB of tile data ROM, and external `T`, `B` and `A` ROMs 
+[The video chip](#video-chip-operation) has access to [video](#video-ram) / [palette](#palette-ram) RAM, internal 2 MB of [tile data ROM](#text--tiles-t-rom), and external [`T`](#text--tiles-t-rom), [`B`](#sprite-bitmask-b-rom) and [`A`](#sprite-color-a-rom) ROMs 
 
 The sound chip has access to internal 2 MB audio samples ROM and external `M` ROM
 
@@ -129,17 +129,17 @@ Work RAM usage:
 
 | address range | description |
 | :-- | :-- |
-| `0x900000-0x903fff` | definition of 64*64 background layer, 4 bytes each tile |
-| `0x904000-0x905fff` | definition of 64*32 text layer, 4 bytes each character |
+| `0x900000-0x903fff` | definition of 64*64 [background layer](#background-tile-layer), 4 bytes each tile |
+| `0x904000-0x905fff` | definition of 64*32 [text layer](#foreground-text-layer), 4 bytes each character |
 | `0x907000-0x9077ff` | row scroll RAM |
 
 ### Palette RAM
 
 | address range | description |
 | :-- | :-- |
-| `0xa00000-0xa007ff` | 32 * 2 bytes x 32 sprite palettes |
-| `0xa00800-0xa00fff` | 32 * 2 bytes x 32 background palettes |
-| `0xa01000-0xa011ff` | 16 * 2 bytes x 32 text palettes |
+| `0xa00000-0xa007ff` | 32 * 2 bytes x 32 [sprite](#sprites-layer) palettes |
+| `0xa00800-0xa00fff` | 32 * 2 bytes x 32 [background](#background-tile-layer) palettes |
+| `0xa01000-0xa011ff` | 16 * 2 bytes x 32 [text](#foreground-text-layer) palettes |
 | `0xa01200-0xa01fff` | unused palette RAM |
 
 ### Video Registers
@@ -148,12 +148,12 @@ Work RAM usage:
 | :-- | :-- |
 | `0xb00000-0xb00fff` | buffer for 256 sprites 16 bytes each copied by sprite DMA |
 | `0xb01000-0xb0103f` | zoom table, 16 entries * 4 bytes each, W/O |
-| `0xb02000-0xb02001` | background scroll up |
-| `0xb03000-0xb03001` | background scroll left |
+| `0xb02000-0xb02001` | [background](#background-tile-layer) scroll up |
+| `0xb03000-0xb03001` | [background](#background-tile-layer) scroll left |
 | `0xb04000-0xb04001` | zoom flags ? |
-| `0xb05000-0xb05001` | text scroll up |
-| `0xb06000-0xb05001` | text scroll left |
-| `0xb07000-0xb07001` | screen scanline, R/O |
+| `0xb05000-0xb05001` | [text](#foreground-text-layer) scroll up |
+| `0xb06000-0xb05001` | [text](#foreground-text-layer) scroll left |
+| `0xb07000-0xb07001` | [screen](#video-chip-operation) scanline, R/O |
 | `0xb06000-0xb06001` | [control flags](#control-flags) |
 
 #### Control flags
@@ -271,6 +271,28 @@ The whole Z80 address space is occupied by RAM, that is populated by main CPU.
 | `0x8400-0x84ff`| sound latch 2 |
 
 ## Video chip operation
+
+Video generation is handled by a custom video chip IGS023. It generates 448 x 224 resolution (10 MHz pixel clock) display with standard 4:3 display aspect ratio.
+
+Display is composed of three graphics layers:
+
+1. Background tiles layer
+2. Sprites layer
+3. Foreground text layer.
+
+Text layer is drawn always on top. Each sprite has a priority setting enabling it to be drawn below or above tiles layer.
+
+### Background tiles layer
+
+### Sprites layer
+
+### Foreground text layer
+
+### Text / tiles `T` ROM
+
+### Sprite bitmask `B` ROM
+
+### Sprite color `A` ROM
 
 ## Audio chip operation
 
