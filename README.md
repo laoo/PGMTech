@@ -187,7 +187,7 @@ Work RAM usage:
 | `0xc0000c-0xc0000d`| sound latch 3 |
 
 ### I/O regs
-    $c08000 R/O |xxxxxxxxxxxxxxxx| Player 1 & 2 controls
+    $c08000 R/O |fedcba9876543210| Player 1 & 2 controls
                  ||||||||||||||||_ P1 START
                  |||||||||||||||__ P1 UP
                  ||||||||||||||___ P1 DOWN
@@ -205,7 +205,7 @@ Work RAM usage:
                  ||_______________ P2 B
                  |________________ P2 C
 
-    $c08002 R/O |xxxxxxxxxxxxxxxx| Player 3 & 4 controls
+    $c08002 R/O |fedcba9876543210| Player 3 & 4 controls
                  ||||||||||||||||_ P3 START
                  |||||||||||||||__ P3 UP
                  ||||||||||||||___ P3 DOWN
@@ -223,7 +223,7 @@ Work RAM usage:
                  ||_______________ P4 B
                  |________________ P4 C
 
-    $c08004 R/O |xxxxxxxxxxxxxxxx| Extra controls
+    $c08004 R/O |fedcba9876543210| Extra controls
                  ||||||||||||||||_ P1 COIN
                  |||||||||||||||__ P2 COIN
                  ||||||||||||||___ P3 COIN
@@ -241,12 +241,12 @@ Work RAM usage:
                  ||_______________ RESERVED2
                  |________________ RESERVED3
 
-    $c08006 R/O |........x...xxxx| Dip switches
-                         |   ||||_ Test mode (1-ON,0-OFF)
-                         |   |||__ Music (0-ON,1-OFF)
-                         |   ||___ Voice (0-ON,1-OFF)
-                         |   |____ Free Play (0-ON,1-OFF)
-                         |   |____ Stop Mode (0-ON,1-OFF)
+    $c08006 R/O |........7..43210| Dip switches
+                         |  |||||_ Test mode (1-ON,0-OFF)
+                         |  ||||__ Music (0-ON,1-OFF)
+                         |  |||___ Voice (0-ON,1-OFF)
+                         |  ||____ Free Play (0-ON,1-OFF)
+                         |  |_____ Stop Mode (0-ON,1-OFF)
                          |________ QC mode (1-ON,0-OFF)
 
 All inputs are active low.
