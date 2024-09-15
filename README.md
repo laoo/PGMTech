@@ -131,7 +131,7 @@ Work RAM usage:
 | :-- | :-- |
 | `$900000-$903fff` | definition of 64*64 [background layer](#background-tiles-layer), 4 bytes each tile |
 | `$904000-$905fff` | definition of 64*32 [text layer](#foreground-text-layer), 4 bytes each character |
-| `$907000-$9077ff` | row scroll RAM |
+| `$907000-$9077ff` | [row scroll RAM](#tilemap-scrolling) |
 
 ### Palette RAM
 
@@ -148,8 +148,8 @@ Work RAM usage:
 | :-- | :-- |
 | `$b00000-$b00fff` | buffer for 256 [sprites](#sprites-layer) 16 bytes each copied by sprite DMA |
 | `$b01000-$b0103f` | zoom table, 16 entries * 4 bytes each, W/O |
-| `$b02000-$b02001` | [background](#background-tiles-layer) scroll up |
-| `$b03000-$b03001` | [background](#background-tiles-layer) scroll left |
+| `$b02000-$b02001` | [background](#background-tiles-layer) [scroll up](#tilemap-scrolling) |
+| `$b03000-$b03001` | [background](#background-tiles-layer) [scroll left](#tilemap-scrolling) |
 | `$b04000-$b04001` | zoom flags ? |
 | `$b05000-$b05001` | [text](#foreground-text-layer) scroll up |
 | `$b06000-$b05001` | [text](#foreground-text-layer) scroll left |
@@ -351,6 +351,8 @@ where:
 - `palette number` multipied by palette size of $40 bytes gives an offset into the [background palette](#background-layer-palette),
 - `x-flip` flips the tile horizontally,
 - `y-flip` fpips the tile vertivally.
+
+#### Tilemap scrolling
 
 ### Sprites layer
 
