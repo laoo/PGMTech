@@ -1,4 +1,4 @@
-mi# IGS PGM Tech Scroll
+# IGS PGM Tech Scroll
 
 * [Overview](#overview)
 * [68000 memory map](#68000-memory-map)
@@ -129,7 +129,7 @@ Work RAM usage:
 
 | address range | description |
 | :-- | :-- |
-| `$900000-$903fff` | definition of 64*64 [background layer](#background-tile-layer), 4 bytes each tile |
+| `$900000-$903fff` | definition of 64*64 [background layer](#background-tiles-layer), 4 bytes each tile |
 | `$904000-$905fff` | definition of 64*32 [text layer](#foreground-text-layer), 4 bytes each character |
 | `$907000-$9077ff` | row scroll RAM |
 
