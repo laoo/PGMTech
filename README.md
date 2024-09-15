@@ -1,4 +1,4 @@
-# IGS PGM Tech Scroll
+mi# IGS PGM Tech Scroll
 
 * [Overview](#overview)
 * [68000 memory map](#68000-memory-map)
@@ -148,8 +148,8 @@ Work RAM usage:
 | :-- | :-- |
 | `$b00000-$b00fff` | buffer for 256 [sprites](#sprites-layer) 16 bytes each copied by sprite DMA |
 | `$b01000-$b0103f` | zoom table, 16 entries * 4 bytes each, W/O |
-| `$b02000-$b02001` | [background](#background-tile-layer) scroll up |
-| `$b03000-$b03001` | [background](#background-tile-layer) scroll left |
+| `$b02000-$b02001` | [background](#background-tiles-layer) scroll up |
+| `$b03000-$b03001` | [background](#background-tiles-layer) scroll left |
 | `$b04000-$b04001` | zoom flags ? |
 | `$b05000-$b05001` | [text](#foreground-text-layer) scroll up |
 | `$b06000-$b05001` | [text](#foreground-text-layer) scroll left |
