@@ -335,22 +335,33 @@ Each tiles is a 32x32 square of 5-bit pixels defined in 32 rows of 32 pixels whe
 
 #### Tile map
 
-Tile map is located in the video memory mapped into the main CPU address space range `$900000-$903fff`. It is 16 kB arranged in 64 rows of 64 tiles each, where each [tile](#tile-map-entry-format) occupies 32-bits defined as:
+Tile map is located in the video memory mapped into the main CPU address space range `$900000-$903fff`. It is 16 kB arranged in 64 rows of 64 tiles each, where each [tile](#tile-map-entry-format) occupies two words defined as:
 
 #### Tile map entry format
+
+First word:
 ```
-........yxppppp. nnnnnnnnnnnnnnnn
-        │││││││  └┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴─ $0000ffff: tile number
-        ││└┴┴┴┴─────────────────── $003e0000: palette number
-        │└──────────────────────── $00400000: x-flip
-        └───────────────────────── $00800000: y-flip
+nnnnnnnnnnnnnnnn 
+││││││││││││││││
+││││││││││││││││
+││││││││││││││││
+└┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴─ $ffff: tile number
 ```
+
+Second word
+```
+........yxppppp. 
+        ││└┴┴┴┴── $0000003e: palette number
+        │└─────── $00000040: x-flip
+        └──────── $00000080: y-flip
+```
+
 where:
 
 - `tile number` multipied by tile size of $280 bytes gives an offset into the [`T` ROM](#text--tiles-t-rom),
 - `palette number` multipied by palette size of $40 bytes gives an offset into the [background palette](#background-layer-palette),
 - `x-flip` flips the tile horizontally,
-- `y-flip` fpips the tile vertivally.
+- `y-flip` flips the tile vertically.
 
 #### Tilemap scrolling
 
