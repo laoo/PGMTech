@@ -137,16 +137,16 @@ Work RAM usage:
 
 | address range | description |
 | :-- | :-- |
-| `$a00000-$a007ff` | 32 * 2 bytes x 32 [sprite](#sprites-layer) palettes |
-| `$a00800-$a00fff` | 32 * 2 bytes x 32 [background](#background-tile-layer) palettes |
-| `$a01000-$a011ff` | 16 * 2 bytes x 32 [text](#foreground-text-layer) palettes |
+| `$a00000-$a007ff` | 32 * 2 bytes x 32 [sprite](#sprites-layer) [palettes](#palettes) |
+| `$a00800-$a00fff` | 32 * 2 bytes x 32 [background](#background-tile-layer) [palettes](#palettes) |
+| `$a01000-$a011ff` | 16 * 2 bytes x 32 [text](#foreground-text-layer) [palettes](#palettes) |
 | `$a01200-$a01fff` | unused palette RAM |
 
 ### Video Registers
 
 | address range | description |
 | :-- | :-- |
-| `$b00000-$b00fff` | buffer for 256 sprites 16 bytes each copied by sprite DMA |
+| `$b00000-$b00fff` | buffer for 256 [sprites](#sprites-layer) 16 bytes each copied by sprite DMA |
 | `$b01000-$b0103f` | zoom table, 16 entries * 4 bytes each, W/O |
 | `$b02000-$b02001` | [background](#background-tile-layer) scroll up |
 | `$b03000-$b03001` | [background](#background-tile-layer) scroll left |
@@ -294,13 +294,63 @@ Video generation is handled by a custom video chip IGS023. It generates 448 x 22
 
 Display is composed of three graphics layers:
 
-1. Background tiles layer
-2. Sprites layer
-3. Foreground text layer.
+1. [Background tiles layer](#background-tiles-layer)
+2. [Sprites layer](#sprites-layer)
+3. [Foreground text layer](#foreground-text-layer)
 
 Text layer is drawn always on top. Each sprite has a priority setting enabling it to be drawn below or above tiles layer.
 
+### Palettes
+
+Graphics of each layer is palettized with each own individual palette. Each [tile](#background-layer-palette), [text character](#text-layer-palette) or [sprite](#sprites-layer-palette) has 5-bit index to one of 32 palettes. [Background layer](#background-layer-palette) and [sprites layer](#sprites-layer-palette) has 5-bit pixels determining a color of each pixel as a one of 32 colors each, whereas [text layer](#foreground-text-layer) has 4-bit pixels which translates to 16 colors.
+
+ All palette tables has common 15-bit [palette format](#palette-format):
+
+#### Palette format
+```
+.rrrrrgggggbbbbb
+ ││││││││││└┴┴┴┴─ $001f: blue color component
+ │││││└┴┴┴┴────── $03e0: green color component
+ └┴┴┴┴─────────── $7c00: red color component
+```
+#### Sprites layer palette
+
+Sprites layer is defined with 5-bit palette index for each sprite with 5-bit color index into each palette for each pixel which gives 32 palettes of 32 16-bit colors entries mapped for the main CPU into the address range `$a00000-$a007ff`.
+
+#### Background layer palette
+
+Background layer is defined with 5-bit palette index for each tile with 5-bit color index into each palette for each pixel which gives 32 palettes of 32 16-bit colors entries mapped for the main CPU into the address range `$a00800-$a00fff`. Last 31th color entry in each palette denotes transparent pixel, as a result each tile pixel can have 31 different colors.
+
+#### Text layer palette
+
+Text layer is defined with 5-bit palette index for each character with 4-bit color index into each palette for each pixel which gives 32 palettes of 16 16-bit colors entries mapped for the main CPU into the address range `$a01000-$a011ff`. Last 15th color entry in each palette denotes transparent pixel, as a result each character pixel can have 15 different colors.
+
 ### Background tiles layer
+
+Background tiles layer is displayed unless it is disabled with [control flags register](#b06000-control-flags).
+
+#### Tile format
+
+Each tiles is a 32x32 square of 5-bit pixels defined in 32 rows of 32 pixels where each row is packed into 20 bytes. Each tile occupies 32*20 = 640 ($280) bytes. Tiles data shares space with text data within [text/tiles `T` ROM](#text--tiles-t-rom).
+
+#### Tile map
+
+Tile map is located in the video memory mapped into the main CPU address space range `$900000-$903fff`. It is 16 kB arranged in 64 rows of 64 tiles each, where each [tile](#tile-map-entry-format) occupies 32-bits defined as:
+
+#### Tile map entry format
+```
+........yxppppp. nnnnnnnnnnnnnnnn
+        │││││││  └┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴─ $0000ffff: tile number
+        ││└┴┴┴┴─────────────────── $003e0000: palette number
+        │└──────────────────────── $00400000: x-flip
+        └───────────────────────── $00800000: y-flip
+```
+where:
+
+- `tile number` multipied by tile size of $280 bytes gives an offset into the [`T` ROM](#text--tiles-t-rom),
+- `palette number` multipied by palette size of $40 bytes gives an offset into the [background palette](#background-layer-palette),
+- `x-flip` flips the tile horizontally,
+- `y-flip` fpips the tile vertivally.
 
 ### Sprites layer
 
