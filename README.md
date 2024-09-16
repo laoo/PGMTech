@@ -160,11 +160,11 @@ Work RAM usage:
 
 ```
 ..dcb.98765432.0
-  │││ ││││││││ └─ $0001: sprite dma enable - pulse 0->1 to trigger
-  │││ │││││││└─── $0004: irq4 ack - pulse 0->1 to trigger
-  │││ ││││││└──── $0008: iqr6 ack - pulse 0->1 to trigger
-  │││ │││││└───── $0010: ? all games set this
-  │││ │││└┴────── $0060: ? all games except CAVE set this, but seems to serve no purpose
+  │││ │││└┤│││ └─ $0001: sprite dma enable - pulse 0->1 to trigger
+  │││ │││ │││└─── $0004: irq4 ack - pulse 0->1 to trigger
+  │││ │││ ││└──── $0008: iqr6 ack - pulse 0->1 to trigger
+  │││ │││ │└───── $0010: ? all games set this
+  │││ │││ └────── $0060: ? all games except CAVE set this, but seems to serve no purpose
   │││ ││└──────── $0080: ? causes system to lose video synch
   │││ │└───────── $0100: ? shows garbage on screen for all except background
   │││ └────────── $0200: ? disable everything except background layer
@@ -309,9 +309,9 @@ Graphics of each layer is palettized with each own individual palette. Each [til
 #### Palette format
 ```
 .rrrrrgggggbbbbb
- ││││││││││└┴┴┴┴─ $001f: blue color component
- │││││└┴┴┴┴────── $03e0: green color component
- └┴┴┴┴─────────── $7c00: red color component
+ └───┤└───┤└───┴─ $001f: blue color component
+     │    └────── $03e0: green color component
+     └─────────── $7c00: red color component
 ```
 #### Sprites layer palette
 
@@ -331,7 +331,7 @@ Background tiles layer is displayed unless it is disabled with [control flags re
 
 #### Tile format
 
-Each tiles is a 32x32 square of 5-bit pixels defined in 32 rows of 32 pixels where each row is packed into 20 bytes. Each tile occupies 32*20 = 640 ($280) bytes. Tiles data shares space with text data within [text/tiles `T` ROM](#text--tiles-t-rom).
+Each tile is a 32x32 square of 5-bit pixels defined in 32 rows of 32 pixels where each row is packed into 20 bytes. Each tile occupies 32*20 = 640 ($280) bytes. Tiles data shares space with text data within [text/tiles `T` ROM](#text--tiles-t-rom).
 
 #### Tile map
 
@@ -342,18 +342,15 @@ Tile map is located in the video memory mapped into the main CPU address space r
 First word:
 ```
 nnnnnnnnnnnnnnnn 
-││││││││││││││││
-││││││││││││││││
-││││││││││││││││
-└┴┴┴┴┴┴┴┴┴┴┴┴┴┴┴─ $ffff: tile number
+└──────────────┴─ $ffff: tile number
 ```
 
 Second word
 ```
 ........yxppppp. 
-        ││└┴┴┴┴── $0000003e: palette number
-        │└─────── $00000040: x-flip
-        └──────── $00000080: y-flip
+        ││└───┴── $003e: palette number
+        │└─────── $0040: x-flip
+        └──────── $0080: y-flip
 ```
 
 where:
@@ -369,7 +366,23 @@ where:
 
 ### Foreground text layer
 
+The foreground text layer is logically the same as the background layer but the tile (or character) size is 8x8 pixels and limited to 16 colours per tile.
+
+#### Tile format
+
+Each tile is a 8x8 pixels in size and comprises of 8 rows of 8 pixels (4 bytes) stored contiguously in memory. Each nibble represents a palette index into the palette specified by the text layer tile entry, the lowest order nibble is displayed first on screen (the leftmost pixel).
+
+```
+bbbbaaaa 
+└──┤└──┴─ $0f: leftmost pixel
+   └───── $f0: rightmost pixel
+```
+
+Each tile occupies 8*4 = 32 bytes. Text layer tile data shares space with background tile data within [text/tiles `T` ROM](#text--tiles-t-rom). The address of the tile within the T ROM is calculated as the tile number (0-$ffff) multiplied by 32. This gives an effective address space of 2MB (0-$1FFFFF) for text layer tiles.
+
 ### Text / tiles `T` ROM
+
+The T ROM on the top (PROG) PCB can hold upto 16MB of data which is accessed by the PGM as 8Mx16. Both background and text tile data are stored in the T ROM.
 
 ### Sprite bitmask `B` ROM
 
