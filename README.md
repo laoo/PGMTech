@@ -384,9 +384,27 @@ Each tile occupies 8*4 = 32 bytes. Text layer tile data shares space with backgr
 
 The T ROM on the top (PROG) PCB can hold upto 16MB of data which is accessed by the PGM as 8Mx16. Both background and text tile data are stored in the T ROM.
 
-### Sprite bitmask `B` ROM
+### Sprite Data ROMs
 
-### Sprite color `A` ROM
+Sprites are split accross two different ROMs on the bottom (CHAR) PCB. The B ROM holds the address of the colour data and the transparency information for the sprite while the A ROM holds the palette index colour 
+information. Information about the sprites size, location, palette and the address of the sprite data in the B ROM are part of the sprite definition. A combination of this information and the data in the A and B ROMs are used to render the sprite.
+
+#### Bitmask `B` ROM
+
+The first long-word read by the sprite engine (given by the sprite entry) from the B ROM is the address of the colour data from the A ROM. Following this is a bitmask defining the visibility (1) or transparency (0) of each pixel in the sprite. The sprite engine reads the B ROM pixel visibility sequentially, one word at a time (sprites are a multiple of 16 pixels wide), and processes the bits from LSB to MSB. Therefore the LSB of each word of visibility information is the leftmost pixel processed and the MSB is the rightmost.
+
+#### Sprite color `A` ROM
+
+Sprite colour information is stored as 5 bits per pixel and packed into 3 pixels per word. Colour information is read sequentially when drawing sprites and is also processed from LSB to MSB.
+
+```
+.cccccbbbbbaaaaa 
+ └───┤└───┤└───┴─ $001f: palette index (leftmost pixel)
+     |    └────── $03e0: palette index
+     └─────────── $7c00: palette index (rightmost pixel)
+```
+
+Bit 15 of the A ROM is physically unconnected on the CHAR PCB.
 
 ## Audio chip operation
 
