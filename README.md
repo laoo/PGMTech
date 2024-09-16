@@ -129,8 +129,8 @@ Work RAM usage:
 
 | address range | description |
 | :-- | :-- |
-| `$900000-$903fff` | definition of 64*64 [background layer](#background-tiles-layer), 4 bytes each tile |
-| `$904000-$905fff` | definition of 64*32 [text layer](#foreground-text-layer), 4 bytes each character |
+| `$900000-$903fff` | definition of 64*64 [background layer](#background-tiles-layer), 2 words each tile |
+| `$904000-$905fff` | definition of 64*32 [text layer](#foreground-text-layer), 2 words each character |
 | `$907000-$9077ff` | [row scroll RAM](#tilemap-scrolling) |
 
 ### Palette RAM
@@ -329,11 +329,11 @@ Text layer is defined with 5-bit palette index for each character with 4-bit col
 
 Background tiles layer is displayed unless it is disabled with [control flags register](#b06000-control-flags).
 
-#### Tile format
+#### Background tile format
 
 Each tile is a 32x32 square of 5-bit pixels defined in 32 rows of 32 pixels where each row is packed into 20 bytes. Each tile occupies 32*20 = 640 ($280) bytes. Tiles data shares space with text data within [text/tiles `T` ROM](#text--tiles-t-rom).
 
-#### Tile map
+#### Background tilemap
 
 Tile map is located in the video memory mapped into the main CPU address space range `$900000-$903fff`. It is 16 kB arranged in 64 rows of 64 tiles each, where each tile occupies two words defined as:
 
@@ -353,7 +353,7 @@ where:
 - `x-flip` flips the tile horizontally,
 - `y-flip` flips the tile vertically.
 
-#### Tilemap scrolling
+#### Background tilemap scrolling
 
 ### Sprites layer
 
@@ -388,11 +388,15 @@ $8 .wwwwwwhhhhhhhhh
 
 ### Foreground text layer
 
-The foreground text layer is logically the same as the background layer but the tile (or character) size is 8x8 pixels and limited to 16 colours per tile.
+The foreground text layer is logically the same as the background layer but the tile (or character) size is 8x8 pixels and limited to 16 colours per tile. It can be too disabled with [control flags register](#b06000-control-flags).
 
-#### Tile format
+#### Character tilemap
 
-Each tile is a 8x8 pixels in size and comprises of 8 rows of 8 pixels (4 bytes) stored contiguously in memory. Each nibble represents a palette index into the palette specified by the text layer tile entry, the lowest order nibble is displayed first on screen (the leftmost pixel).
+Character tile map is located in the video memory mapped into the main CPU address space range `$904000-$905fff`. It is 8 kB arranged in 64 rows of 32 tiles each.
+
+#### Character tile format
+
+Each tile is a 8x8 pixels in size and comprises of 8 rows of 8 pixels packed into 4 bytes each row stored contiguously in memory. Each nibble represents a palette index into the palette specified by the text layer tile entry, the lowest order nibble is displayed first on screen (the leftmost pixel).
 
 ```
 bbbbaaaa 
