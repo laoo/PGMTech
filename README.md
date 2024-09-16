@@ -335,24 +335,17 @@ Each tile is a 32x32 square of 5-bit pixels defined in 32 rows of 32 pixels wher
 
 #### Tile map
 
-Tile map is located in the video memory mapped into the main CPU address space range `$900000-$903fff`. It is 16 kB arranged in 64 rows of 64 tiles each, where each [tile](#tile-map-entry-format) occupies two words defined as:
+Tile map is located in the video memory mapped into the main CPU address space range `$900000-$903fff`. It is 16 kB arranged in 64 rows of 64 tiles each, where each tile occupies two words defined as:
 
-#### Tile map entry format
+```
+$0 nnnnnnnnnnnnnnnn 
+   └──────────────┴─ $ffff: tile number
 
-First word:
+$2 ........yxppppp. 
+           ││└───┴── $003e: palette number
+           │└─────── $0040: x-flip
+           └──────── $0080: y-flip
 ```
-nnnnnnnnnnnnnnnn 
-└──────────────┴─ $ffff: tile number
-```
-
-Second word
-```
-........yxppppp. 
-        ││└───┴── $003e: palette number
-        │└─────── $0040: x-flip
-        └──────── $0080: y-flip
-```
-
 where:
 
 - `tile number` multipied by tile size of $280 bytes gives an offset into the [`T` ROM](#text--tiles-t-rom),
