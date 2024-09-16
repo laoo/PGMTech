@@ -364,6 +364,35 @@ where:
 
 ### Sprites layer
 
+There are a maximum of 256 sprites on the PGM and they are copied via DMA from the first 2560 bytes of work RAM (10 bytes per sprite) to the internal sprite registers every frame. The sprite definition consists of 5 words of packed bits per sprite stored sequentially in memroy:
+
+```
+$0 mttttxxxxxxxxxxx 
+   |└──┤└─────────┴─ $07FF: X position (11 bit signed)
+   |   └──────────── $7800: Horizontal Zoom/Shrink table select
+   └──────────────── $8000: Horizontal Zoom/Shrink mode select
+
+$2 mttttyyyyyyyyyyy 
+   |└──┤└─────────┴─ $07FF: Y position (11 bit signed)
+   |   └──────────── $7800: Vertical Zoom/Shrink table select
+   └──────────────── $8000: Vertical Zoom/Shrink mode select
+
+$4 .vhpppppmxxxxxxx
+    ||└───┤|└─────┴─ $007F: Sprite mask B ROM address MSB
+    ||    |└──────── $0080: Priority mode (Over(0) or Under(1) background)
+    ||    └───────── $1f00: Palette number
+    |└────────────── $2000: Horizontal flip
+    └─────────────── $4000: Vertical flip
+
+$6 xxxxxxxxxxxxxxxx
+   └──────────────┴─ $ffff: Sprite mask B ROM address LSB
+
+$8 .wwwwwwhhhhhhhhh
+    └────┤└───────┴─ $01ff: Sprite height
+         └────────── $7e00: Sprite width (in 16 pixel units)
+```
+
+
 ### Foreground text layer
 
 The foreground text layer is logically the same as the background layer but the tile (or character) size is 8x8 pixels and limited to 16 colours per tile.
