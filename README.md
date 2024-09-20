@@ -152,11 +152,11 @@ Work RAM usage:
 | `$b03000-$b03001` | [background](#background-tiles-layer) [scroll left](#tilemap-scrolling) |
 | `$b04000-$b04001` | zoom flags ? |
 | `$b05000-$b05001` | [text](#foreground-text-layer) scroll up |
-| `$b06000-$b05001` | [text](#foreground-text-layer) scroll left |
+| `$b06000-$b06001` | [text](#foreground-text-layer) scroll left |
 | `$b07000-$b07001` | [screen](#video-chip-operation) scanline, R/O |
-| `$b06000-$b06001` | [control flags](#b06000-control-flags) |
+| `$b0e000-$b0e001` | [control flags](#b06000-control-flags) |
 
-#### `$b06000` Control flags
+#### `$b0e000` Control flags
 
 ```
 ..dcb.98765432.0
