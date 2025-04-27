@@ -131,7 +131,7 @@ Work RAM usage:
 | :-- | :-- |
 | `$900000-$903fff` | definition of 64*64 [background layer](#background-tiles-layer), 2 words each tile |
 | `$904000-$905fff` | definition of 64*32 [text layer](#foreground-text-layer), 2 words each character |
-| `$907000-$9077ff` | [row scroll RAM](#tilemap-scrolling) |
+| `$907000-$9077ff` | [row scroll RAM](#background-tilemap-scrolling) |
 
 ### Palette RAM
 
@@ -148,8 +148,8 @@ Work RAM usage:
 | :-- | :-- |
 | `$b00000-$b00fff` | buffer for 256 [sprites](#sprites-layer) 16 bytes each copied by sprite DMA |
 | `$b01000-$b0103f` | zoom table, 16 entries * 4 bytes each, W/O |
-| `$b02000-$b02001` | [background](#background-tiles-layer) [scroll up](#tilemap-scrolling) |
-| `$b03000-$b03001` | [background](#background-tiles-layer) [scroll left](#tilemap-scrolling) |
+| `$b02000-$b02001` | [background](#background-tiles-layer) [scroll up](#background-tilemap-scrolling) |
+| `$b03000-$b03001` | [background](#background-tiles-layer) [scroll left](#background-tilemap-scrolling) |
 | `$b04000-$b04001` | zoom flags ? |
 | `$b05000-$b05001` | [text](#foreground-text-layer) scroll up |
 | `$b06000-$b06001` | [text](#foreground-text-layer) scroll left |
@@ -355,9 +355,17 @@ where:
 
 #### Background tilemap scrolling
 
+To make the background tilemap scroll vertically, edit `$b020000` (word) - increment it to make the layer scroll down, and decrement it to make it scroll up.
+To make the background tilemap scroll horizontally, edit `$b03000` (word) - increment it to make the layer scroll to the right, and decrement it to make it scroll to the left.
+
+Rowscroll can be used on the background tilemap: each line can be drawn with a horizontal offset. This is used in games such as Martial Masters (True Lotus Master stage), Espgaluda (Kakusei toggle), or the BIOS introduction itself (see below).
+In the range `$907000-$9077ff`, each word controls the offset of one line, for a total of 512 lines from top to bottom. Increment an offset to shift it to the right, and decrement it to shift it to the left.
+
+NOTE: The BIOS introduction screen writes $0010 in the `$9070c0-$9070ff` range in order to offset the "PolyGame Master" text 16 pixels to the right. As such, make sure to write $0000 to this range in order to avoid unexpected background tilemap rendering.
+
 ### Sprites layer
 
-There are a maximum of 256 sprites on the PGM and they are copied via DMA from the first 2560 bytes of work RAM (10 bytes per sprite) to the internal sprite registers every frame. The sprite definition consists of 5 words of packed bits per sprite stored sequentially in memroy:
+There are a maximum of 256 sprites on the PGM and they are copied via DMA from the first 2560 bytes of work RAM (10 bytes per sprite) to the internal sprite registers every frame. The sprite definition consists of 5 words of packed bits per sprite stored sequentially in memory:
 
 ```
 $0 mttttxxxxxxxxxxx 
