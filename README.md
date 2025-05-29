@@ -452,10 +452,10 @@ Bit 15 of the A ROM is physically unconnected on the CHAR PCB.
 | --: | :-- | --: | :-- |
 | 31 | +5V | +5V | 32 |
 | 30 | PA14_OUT | TA13 | 33 |
-| 29 | U12 | TA12 | 34 |
-| 28 | U11 | TA11 | 35 |
+| 29 | ? | TA12 | 34 |
+| 28 | ? | TA11 | 35 |
 | 27 | PA_13 | TA10 | 36 |
-| 26 | U10 | TA9 | 37 |
+| 26 | ? | TA9 | 37 |
 | 25 | PA12_OUT | TA8 | 38 |
 | 24 | PA11_OUT | TA7 | 39 |
 | 23 | PA10_OUT | TA6 | 40 |
@@ -467,36 +467,42 @@ Bit 15 of the A ROM is physically unconnected on the CHAR PCB.
 | 17 | TD3 | TA0 | 46 |
 | 16 | TD4 | TA22 | 47 |
 | 15 | TD5 | TA21 | 48 |
-| 14 | INT_T_ROM_OE | TA20 | 49 |
+| 14 | PGM_TILE_EN# | TA20 | 49 |
 | 13 | TD6 | TA19 | 50 |
 | 12 | TD7 | TA18 | 51 |
 | 11 | TD8 | TA17 | 52 |
 | 10 | TD9 | TA16 | 53 |
-| 9 | CART_CS | TA15 | 54 |
+| 9 | TILE_CS# | TA15 | 54 |
 | 8 | TD15 | TA14 | 55 |
 | 7 | TD14 | GND | 56 |
 | 6 | TD13 | GND | 57 |
 | 5 | TD12 | GND | 58 |
 | 4 | TD11 | GND | 59 |
 | 3 | TD10 | GND | 60 |
-| 2 | U8 | CLK | 61 |
+| 2 | ? | CLK20 | 61 |
 | 1 | GND | GND | 62 |
+
+| signal | notes |
+| :-- | :-- |
+| PGM_TILE_EN# | Driven low to enable tile output from the PGM onboard tile ROM (default), driven high when cart is outputting tile data (TD15-0) |
+| TILE_CS# | Enables tile output on KOVSH cart, pulled down and not used on other games |
+| CLK20 | 20Mhz system clock |
 
 #### Right
 
 | nr | bottom | top | nr |
 | --: | :-- | --: | :-- |
 | 31 | +5V | +5V | 32 |
-| 30 | AS | PA23 | 33 |
-| 29 | U7 | PA22 | 34 |
-| 28 | U6 | PA21 | 35 |
-| 27 | INT_PROM_OE | PA20 | 36 |
-| 26 | U5 | PA19 | 37 |
-| 25 | U4 | PA18 | 38 |
-| 24 | U3 | PA17 | 39 |
-| 23 | R/W | PA16 | 40 |
-| 22 | U2 | PA15 | 41 |
-| 21 | PULL_UP | PA14 | 42 |
+| 30 | AS# | PA23 | 33 |
+| 29 | ? | PA22 | 34 |
+| 28 | ? | PA21 | 35 |
+| 27 | PGM_PRG_EN# | PA20 | 36 |
+| 26 | WR# | PA19 | 37 |
+| 25 | ? | PA18 | 38 |
+| 24 | RESET# | PA17 | 39 |
+| 23 | RD# | PA16 | 40 |
+| 22 | ? | PA15 | 41 |
+| 21 | ? | PA14 | 42 |
 | 20 | PD15 | PA13 | 43 |
 | 19 | PD14 | PA12 | 44 |
 | 18 | PD0 | PA11 | 45 |
@@ -513,10 +519,18 @@ Bit 15 of the A ROM is physically unconnected on the CHAR PCB.
 | 7 | PD11 | U8 | 56 |
 | 6 | PD10 | +5V | 57 |
 | 5 | PD9 | +5V | 58 |
-| 4 | U1 | +5V | 59 |
+| 4 | ? | +5V | 59 |
 | 3 | PA2_OUT | +5V | 60 |
 | 2 | PA1_OUT | +5V | 61 |
 | 1 | GND | +5V | 62 |
+
+| signal | notes |
+| :-- | :-- |
+| AS# | 68000 address strobe |
+| PGM_PRG_EN# | Driven low to enable program data output from the PGM onboard BIOS ROM (default), driven high when cart is outputting program data (PD15-0) |
+| WR# | Driven low when 68000 is writing to the bus |
+| RESET# | Driven low when system is in reset, connected to reset switch on PGM motherboard |
+| RD# | Driven low when 68000 is reading from the bus |
 
 ### Bottom CHAR board
 
