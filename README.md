@@ -33,6 +33,7 @@ From a programmer's perspective, the important components located on the motherb
 [Top board](#top-prog-board) contains:
  * 16 bit [`P` ROM](#program-rom) with main CPU program with 23 bit address space (max 16 MB),
  * 16 bit [`T` ROM](#text--tiles-t-rom) with tile graphics with 23 bit address space (max 16 MB),
+ * Cartridge-dependent add-ons mapped to main CPU address space,
  * Different custom ASICs for copy protection purposes (to do)
 
 [Bottom board](#bottom-char-board) contains:
@@ -42,7 +43,7 @@ From a programmer's perspective, the important components located on the motherb
 
 ### Logical components layout
 
-The main CPU is memory-mapped into its address-space: BIOS, work RAM, video / palette RAM, Z80 interface, Z80 work RAM, I/O registers and external `P` ROM.
+The main CPU is memory-mapped into its address-space: BIOS, work RAM, video / palette RAM, Z80 interface, Z80 work RAM, I/O registers, external `P` ROM and cartridge-dependent add-ons.
 
 The secondary CPU has access to its work RAM, main CPU interface and sound chip interface.
 
@@ -55,7 +56,7 @@ The sound chip has access to internal 2 MB audio samples ROM and external `M` RO
 | address rage | mirroring | description |
 | :-- | :--: | :-- |
 | `$000000-$01ffff` | `$0e0000` | [internal BIOS](#internal-bios)
-| `$100000-$7fffff` | - | [`P` program ROM](#program-rom)
+| `$100000-$7fffff` | - | [`P` program ROM](#program-rom) and cartridge-dependent add-ons
 | `$700006-$700007` | - | [W/O irq4 ack](#irq4-ack)
 | `$800000-$81ffff` | `$0e0000` | [main work RAM](#main-work-ram)
 | `$900000-$907fff` | `$0f8000` | [video RAM](#video-ram)
@@ -64,7 +65,7 @@ The sound chip has access to internal 2 MB audio samples ROM and external `M` RO
 | `$c00000-$c0000f` | `$0e7ff0` | [Z80 interface and RTC regs](#z80-interface-and-rtc-regs)
 | `$c08000-$c08007` | `$0e7ff8` | [I/O regs](#io-regs)
 | `$c10000-$c1ffff` | `$0e0000` | [Z80 RAM](#z80-ram)
-| `$d00000-$ffffff` |- | [`P` program ROM](#program-rom) ?
+| `$d00000-$ffffff` |- | Cartridge-dependent add-ons
 
 ### Internal BIOS
 
@@ -154,7 +155,7 @@ Work RAM usage:
 | `$b05000-$b05001` | [text](#foreground-text-layer) scroll up |
 | `$b06000-$b06001` | [text](#foreground-text-layer) scroll left |
 | `$b07000-$b07001` | [screen](#video-chip-operation) scanline, R/O |
-| `$b0e000-$b0e001` | [control flags](#b06000-control-flags) |
+| `$b0e000-$b0e001` | [control flags](#`$b0e000`-control-flags) |
 
 #### `$b0e000` Control flags
 
@@ -327,7 +328,7 @@ Text layer is defined with 5-bit palette index for each character with 4-bit col
 
 ### Background tiles layer
 
-Background tiles layer is displayed unless it is disabled with [control flags register](#b06000-control-flags).
+Background tiles layer is displayed unless it is disabled with [control flags register](#`$b0e000`-control-flags).
 
 #### Background tile format
 
@@ -388,15 +389,17 @@ $4 .vhpppppmxxxxxxx
 $6 xxxxxxxxxxxxxxxx
    └──────────────┴─ $ffff: Sprite mask B ROM address LSB
 
-$8 .wwwwwwhhhhhhhhh
+$8 .wwwwwwhhhhhhhhh*
     └────┤└───────┴─ $01ff: Sprite height
          └────────── $7e00: Sprite width (in 16 pixel units)
 ```
 
+- Last sprite entry marker is `$8 = .000000000000000`.
+
 
 ### Foreground text layer
 
-The foreground text layer is logically the same as the background layer but the tile (or character) size is 8x8 pixels and limited to 16 colours per tile. It can be too disabled with [control flags register](#b06000-control-flags).
+The foreground text layer is logically the same as the background layer but the tile (or character) size is 8x8 pixels and limited to 16 colours per tile. It can be too disabled with [control flags register](#`$b0e000`-control-flags).
 
 #### Character tilemap
 
@@ -611,5 +614,7 @@ Bit 15 of the A ROM is physically unconnected on the CHAR PCB.
 * http://www.igspgm.com/repairs/tech.htm
 * http://www.igspgm.com/iq132/data1.htm
 * https://github.com/mamedev/mame/tree/master/src/mame/igs
+* https://github.com/finalburnneo/FBNeo/tree/master/src/burn/drv/pgm
 * https://www.arcade-projects.com/threads/pgm-cartridge-pinout.13847/
 * https://www.arcade-projects.com/threads/pgm-mvs-homebrew.24335/
+
