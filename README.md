@@ -163,7 +163,7 @@ Work RAM usage:
 ..dcb.98765432.0
   │││ │││└┤│││ └─ $0001: sprite dma enable - pulse 0->1 to trigger
   │││ │││ │││└─── $0004: irq4 ack - pulse 0->1 to trigger
-  │││ │││ ││└──── $0008: iqr6 ack - pulse 0->1 to trigger
+  │││ │││ ││└──── $0008: irq6 ack - pulse 0->1 to trigger
   │││ │││ │└───── $0010: ? all games set this
   │││ │││ └────── $0060: ? all games except CAVE set this, but seems to serve no purpose
   │││ ││└──────── $0080: ? causes system to lose video synch
@@ -617,4 +617,5 @@ Bit 15 of the A ROM is physically unconnected on the CHAR PCB.
 * https://github.com/finalburnneo/FBNeo/tree/master/src/burn/drv/pgm
 * https://www.arcade-projects.com/threads/pgm-cartridge-pinout.13847/
 * https://www.arcade-projects.com/threads/pgm-mvs-homebrew.24335/
+
 
