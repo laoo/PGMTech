@@ -430,6 +430,8 @@ information. Information about the sprites size, location, palette and the addre
 
 The first long-word read by the sprite engine (given by the sprite entry) from the B ROM is the address of the colour data from the A ROM. Following this is a bitmask defining the visibility (1) or transparency (0) of each pixel in the sprite. The sprite engine reads the B ROM pixel visibility sequentially, one word at a time (sprites are a multiple of 16 pixels wide), and processes the bits from LSB to MSB. Therefore the LSB of each word of visibility information is the leftmost pixel processed and the MSB is the rightmost.
 
+The opacity bitmap is followed by the long-word with the address of the end of the colour data of given sprite. It enables rendering the sprite flipped vertically - the sprite engine processes the entry in B ROM backwards from the end (the end can be found knowing the dimensions of the sprite) drawing the sprite from right to left.
+
 #### Sprite color `A` ROM
 
 Sprite colour information is stored as 5 bits per pixel and packed into 3 pixels per word. Colour information is read sequentially when drawing sprites and is also processed from LSB to MSB.
