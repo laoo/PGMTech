@@ -374,8 +374,8 @@ $0 mttttxxxxxxxxxxx
    |   └──────────── $7800: Horizontal Zoom/Shrink table select
    └──────────────── $8000: Horizontal Zoom/Shrink mode select
 
-$2 mttttyyyyyyyyyyy 
-   |└──┤└─────────┴─ $07FF: Y position (11 bit signed)
+$2 mtttt.yyyyyyyyyy 
+   |└──┤ └────────┴─ $07FF: Y position (10 bit signed)
    |   └──────────── $7800: Vertical Zoom/Shrink table select
    └──────────────── $8000: Vertical Zoom/Shrink mode select
 
