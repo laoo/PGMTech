@@ -148,7 +148,7 @@ Work RAM usage:
 | address range | description |
 | :-- | :-- |
 | `$b00000-$b00fff` | buffer for 256 [sprites](#sprites-layer) 16 bytes each copied by sprite DMA |
-| `$b01000-$b0103f` | zoom table, 16 entries * 4 bytes each, W/O |
+| `$b01000-$b0103f` | [zoom table](#scaling), 16 entries * 4 bytes each, W/O |
 | `$b02000-$b02001` | [background](#background-tiles-layer) [scroll up](#background-tilemap-scrolling) |
 | `$b03000-$b03001` | [background](#background-tiles-layer) [scroll left](#background-tilemap-scrolling) |
 | `$b04000-$b04001` | zoom flags ? |
@@ -310,7 +310,7 @@ Graphics of each layer is palettized with each own individual palette. Each [til
 #### Palette format
 ```
 .rrrrrgggggbbbbb
- └───┤└───┤└───┴─ $001f: blue color component
+ └───┤└───┤└───┴─ $001f: blue color componentenlarges
      │    └────── $03e0: green color component
      └─────────── $7c00: red color component
 ```
@@ -396,6 +396,9 @@ $8 .wwwwwwhhhhhhhhh*
 
 - Last sprite entry marker is `$8 = .000000000000000`.
 
+#### Scaling
+
+`t`-bits select an entry in `$b01000-$b0103f` zoom table. `m` selects the operation mode as _grow_ when set and _shring_ otherwise. A set bit in zoom table entry repeats a pixel in then _grow_ mode and skips it in _shrink_ mode. Each bit is referenced linearly and circularly as the sprite is scanned.
 
 ### Foreground text layer
 
