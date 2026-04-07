@@ -162,7 +162,7 @@ Work RAM usage:
 ```
 ..dcb.98765432.0
   │││ │││└┤│││ └─ $0001: sprite dma enable - pulse 0->1 to trigger
-  │││ │││ │││└─── $0004: irq4 clear to ack, set to enable. Triggered about 4 times each VBL
+  │││ │││ │││└─── $0004: irq4 clear to ack, set to enable. Triggered every 62 scanlines (3.968 ms), not synced to VBL
   │││ │││ ││└──── $0008: irq6 clear to ack, set to enable. Triggered each VBL
   │││ │││ │└───── $0010: ? all games set this
   │││ │││ └────── $0060: ? all games except CAVE set this, but seems to serve no purpose
