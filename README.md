@@ -503,7 +503,7 @@ Bit 15 of the A ROM is physically unconnected on the CHAR PCB.
 | 31 | +5V | +5V | 32 |
 | 30 | AS# | PA23 | 33 |
 | 29 | ? | PA22 | 34 |
-| 28 | ? | PA21 | 35 |
+| 28 | BLANK# | PA21 | 35 |
 | 27 | PGM_PRG_EN# | PA20 | 36 |
 | 26 | WR# | PA19 | 37 |
 | 25 | ? | PA18 | 38 |
@@ -539,6 +539,7 @@ Bit 15 of the A ROM is physically unconnected on the CHAR PCB.
 | WR# | Driven low when 68000 is writing to the bus |
 | RESET# | Driven low when system is in reset, connected to reset switch on PGM motherboard |
 | RD# | Driven low when 68000 is reading from the bus |
+| BLANK# | Driven low during horizontal and vertical blanks |
 
 ### Bottom CHAR board
 
