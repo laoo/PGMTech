@@ -148,7 +148,7 @@ Work RAM usage:
 | address range | description |
 | :-- | :-- |
 | `$b00000-$b00fff` | buffer for 256 [sprites](#sprites-layer) 16 bytes each copied by sprite DMA |
-| `$b01000-$b0103f` | [zoom table](#scaling), 16 entries * 4 bytes each, W/O |
+| `$b01000-$b0103f` | [zoom table](#scaling), 16 entries * 4 bytes each, W/O. This table actually appears to be unused by the hardware. |
 | `$b02000-$b02001` | [background](#background-tiles-layer) [scroll up](#background-tilemap-scrolling) |
 | `$b03000-$b03001` | [background](#background-tiles-layer) [scroll left](#background-tilemap-scrolling) |
 | `$b04000-$b04001` | zoom flags ? |
@@ -398,7 +398,44 @@ $8 .wwwwwwhhhhhhhhh*
 
 #### Scaling
 
-`t`-bits select an entry in `$b01000-$b0103f` zoom table. `m` selects the operation mode as _grow_ when set and _shring_ otherwise. A set bit in zoom table entry repeats a pixel in then _grow_ mode and skips it in _shrink_ mode. Each bit is referenced linearly and circularly as the sprite is scanned.
+Seemingly `t`-bits select an entry in the zoom table while `m` selects the operation mode as _grow_ when set and _shring_ otherwise. 
+
+However, the zoom table written at `$b01000-$b0103f` is not used on production hardware, perhaps a feature which was dropped? The actual zoom patterns used are as follows:
+```
+ 0 55555555
+ 1 55555515
+ 2 55155515
+ 3 55151515
+ 4 15151515
+ 5 15151511
+ 6 15111511
+ 7 15111111
+ 8 11111111
+ 9 11111101
+10 11011101
+11 11010101
+12 01010101
+13 01010001
+14 00010001
+15 00010000
+16 00000000
+17 00010000
+18 00010001
+19 01010001
+20 01010101
+21 01110101
+22 01110111
+23 11110111
+24 11111111
+25 11511111
+26 11511151
+27 51511151
+28 51515151
+29 51555151
+30 51555155
+31 55555155
+```
+The 5 bit number made from `m` as the high bit and `t` as the low bits is the index into the above table. When in _shrink_ mode the zoom enty is sampled from bit 0 up to 31 cirularly, and in _grow_ mode it is sampled from 31 down to 0 circularly for each line rendered. When in _shrink_ mode the sprite line after the current line will be skipped if the bit is set and in _grow_ mode the current line will be duplicated if the bit is set. If not set the next line is rendered as normal.
 
 ### Foreground text layer
 
