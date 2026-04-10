@@ -151,7 +151,7 @@ Work RAM usage:
 | `$b01000-$b0103f` | [zoom table](#scaling), 16 entries * 4 bytes each, W/O. This table actually appears to be unused by the hardware. |
 | `$b02000-$b02001` | [background](#background-tiles-layer) [scroll up](#background-tilemap-scrolling) |
 | `$b03000-$b03001` | [background](#background-tiles-layer) [scroll left](#background-tilemap-scrolling) |
-| `$b04000-$b04001` | [BG layer scaling](#`$b04000`-bg-layer-scaling) |
+| `$b04000-$b04001` | [BG layer scaling](#b04000-bg-layer-scaling) |
 | `$b05000-$b05001` | [text](#foreground-text-layer) scroll up |
 | `$b06000-$b06001` | [text](#foreground-text-layer) scroll left |
 | `$b07000-$b07001` | [screen](#video-chip-operation) scanline, R/O |
