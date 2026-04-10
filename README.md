@@ -410,42 +410,45 @@ $8 .wwwwwwhhhhhhhhh*
 
 Seemingly `t`-bits select an entry in the zoom table while `m` selects the operation mode as _grow_ when set and _shring_ otherwise. 
 
-However, the zoom table written at `$b01000-$b0103f` is not used on production hardware, perhaps a feature which was dropped? The actual zoom patterns used are as follows:
+However, the zoom table written at `$b01000-$b0103f` is not used on production hardware, perhaps a feature which was dropped? Quite how the zoom table was supposed to be used is a little unclear as the values observed for scaling differ depending on grow, shrink and also flip. Tables which can be used to emulate the sprite scale are as follows:
 ```
- 0 55555555
- 1 55555515
- 2 55155515
- 3 55151515
- 4 15151515
- 5 15151511
- 6 15111511
- 7 15111111
- 8 11111111
- 9 11111101
-10 11011101
-11 11010101
-12 01010101
-13 01010001
-14 00010001
-15 00010000
-16 00000000
-17 00010000
-18 00010001
-19 01010001
-20 01010101
-21 01110101
-22 01110111
-23 11110111
-24 11111111
-25 11511111
-26 11511151
-27 51511151
-28 51515151
-29 51555151
-30 51555155
-31 55555155
+   Normal   Flipped
+ 0 AAAAAAAA 55555555
+ 1 A8AAAAAA 55555155
+ 2 A8AAA8AA 51555155
+ 3 A8A8A8AA 51515155
+ 4 A8A8A8A8 51515151
+ 5 88A8A8A8 51515111
+ 6 88A888A8 51115111
+ 7 888888A8 51111111
+ 8 88888888 11111111
+ 9 80888888 11111011
+10 80888088 10111011
+11 80808088 10101011
+12 80808080 10101010
+13 80008080 10100010
+14 80008000 00100010
+15 00008000 00100000
+16 00000000 00000000
+17 00010000 00080000
+18 00010001 00080008
+19 01010001 00080808
+20 01010101 08080808
+21 01110101 08088808
+22 01110111 88088808
+23 11110111 88088888
+24 11111111 88888888
+25 11511111 8888A888
+26 11511151 A888A888
+27 51511151 A888A8A8
+28 51515151 A8A8A8A8
+29 51555151 A8AAA8A8
+30 51555155 A8AAA8AA
+31 55555155 A8AAAAAA
 ```
-The 5 bit number made from `m` as the high bit and `t` as the low bits is the index into the above table. When in _shrink_ mode the zoom enty is sampled from bit 0 up to 31 cirularly, and in _grow_ mode it is sampled from 31 down to 0 circularly for each line rendered. When in _shrink_ mode the sprite line after the current line will be skipped if the bit is set and in _grow_ mode the current line will be duplicated if the bit is set. If not set the next line is rendered as normal.
+The 5 bit number made from `m` as the high bit and `t` as the low bits is the index into the above table. Sample each bit in the table entry from 31 down to 0 circularly for each line rendered. When in _shrink_ mode the sprite line after the current line will be skipped if the bit is set and in _grow_ mode the current line will be duplicated if the bit is set. If not set the next line is rendered as normal.
+
+Vertically flipped sprites render one less line than indicated by the height field of the sprite table. It is assumed the horizontal scaling works in the same fashion as the vertical scaling, although this has not been confirmed on real hardware.
 
 ### Foreground text layer
 
