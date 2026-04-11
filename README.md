@@ -589,7 +589,7 @@ Bit 15 of the A ROM is physically unconnected on the CHAR PCB.
 | WR# | Driven low when 68000 is writing to the bus |
 | RESET# | Driven low when system is in reset, connected to reset switch on PGM motherboard |
 | RD# | Driven low when 68000 is reading from the bus |
-| BLANK# | Driven low during horizontal and vertical blanks |
+| BLANK# | Driven low at the beginning of each renderered line (?) and during vblank. 224 short low bursts and 1 long per frame. Sprite DMA happens at line 221.  |
 
 ### Bottom CHAR board
 
