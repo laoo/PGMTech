@@ -408,7 +408,7 @@ $8 .wwwwwwhhhhhhhhh*
 
 #### Scaling
 
-Seemingly `t`-bits select an entry in the zoom table while `m` selects the operation mode as _grow_ when set and _shring_ otherwise. 
+Seemingly `t`-bits select an entry in the zoom table while `m` selects the operation mode as _grow_ when set and _shrink_ otherwise. 
 
 However, the zoom table written at `$b01000-$b0103f` is not used on production hardware, perhaps a feature which was dropped? Quite how the zoom table was supposed to be used is a little unclear as the values observed for scaling differ depending on grow, shrink and also flip. Tables which can be used to emulate the sprite scale are as follows:
 ```
