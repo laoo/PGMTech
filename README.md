@@ -148,7 +148,7 @@ Work RAM usage:
 | address range | description |
 | :-- | :-- |
 | `$b00000-$b00fff` | buffer for 256 [sprites](#sprites-layer) 16 bytes each copied by sprite DMA |
-| `$b01000-$b0103f` | [zoom table](#scaling), 16 entries * 4 bytes each, W/O. This table actually appears to be unused by the hardware. |
+| `$b01000-$b0103f` | [zoom table](#scaling), 16 entries * 4 bytes each, W/O. |
 | `$b02000-$b02001` | [background](#background-tiles-layer) [scroll up](#background-tilemap-scrolling) |
 | `$b03000-$b03001` | [background](#background-tiles-layer) [scroll left](#background-tilemap-scrolling) |
 | `$b04000-$b04001` | [BG layer scaling](#b04000-bg-layer-scaling) |
@@ -408,9 +408,9 @@ $8 .wwwwwwhhhhhhhhh*
 
 #### Scaling
 
-Seemingly `t`-bits select an entry in the zoom table while `m` selects the operation mode as _grow_ when set and _shrink_ otherwise. 
+`t`-bits select an entry in an internal zoom table while `m` selects the operation mode as _grow_ when set and _shrink_ otherwise.
 
-However, the zoom table written at `$b01000-$b0103f` is not used on production hardware, perhaps a feature which was dropped? Quite how the zoom table was supposed to be used is a little unclear as the values observed for scaling differ depending on grow, shrink and also flip. Tables which can be used to emulate the sprite scale are as follows:
+The zoom tables which are used for scaling the sprites have been determined by analysing bus access on the mask ROM bus:
 ```
    Normal   Flipped
  0 AAAAAAAA 55555555
@@ -448,7 +448,7 @@ However, the zoom table written at `$b01000-$b0103f` is not used on production h
 ```
 The 5 bit number made from `m` as the high bit and `t` as the low bits is the index into the above table. Sample each bit in the table entry from 31 down to 0 circularly for each line rendered. When in _shrink_ mode the sprite line after the current line will be skipped if the bit is set and in _grow_ mode the current line will be duplicated if the bit is set. If not set the next line is rendered as normal.
 
-Vertically flipped sprites render one less line than indicated by the height field of the sprite table. It is assumed the horizontal scaling works in the same fashion as the vertical scaling, although this has not been confirmed on real hardware.
+Vertically flipped sprites terminate one line early in _shrink_ mode if the zoom bit is set on the last line. This only happens for vertically flipped sprites, unflipped sprites render the last line as expected.
 
 ### Foreground text layer
 
