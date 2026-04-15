@@ -413,40 +413,44 @@ $8 .wwwwwwhhhhhhhhh*
 The zoom tables which are used for scaling the sprites have been determined by analysing bus access on the mask ROM bus:
 ```
    Normal   Flipped
- 0 AAAAAAAA 55555555
- 1 A8AAAAAA 55555155
- 2 A8AAA8AA 51555155
- 3 A8A8A8AA 51515155
- 4 A8A8A8A8 51515151
- 5 88A8A8A8 51515111
- 6 88A888A8 51115111
- 7 888888A8 51111111
- 8 88888888 11111111
- 9 80888888 11111011
-10 80888088 10111011
-11 80808088 10101011
-12 80808080 10101010
-13 80008080 10100010
-14 80008000 00100010
-15 00008000 00100000
+ 0 AAAAAAAA AAAAAAAA
+ 1 A8AAAAAA AAAAAA2A
+ 2 A8AAA8AA AA2AAA2A
+ 3 A8A8A8AA AA2A2A2A
+ 4 A8A8A8A8 2A2A2A2A
+ 5 88A8A8A8 2A2A2A22
+ 6 88A888A8 2A222A22
+ 7 888888A8 2A222222
+ 8 88888888 22222222
+ 9 80888888 22222202
+10 80888088 22022202
+11 80808088 22020202
+12 80808080 02020202
+13 80008080 02020002
+14 80008000 00020002
+15 00008000 00020000
 16 00000000 00000000
-17 00010000 00080000
-18 00010001 00080008
-19 01010001 00080808
-20 01010101 08080808
-21 01110101 08088808
-22 01110111 88088808
-23 11110111 88088888
-24 11111111 88888888
-25 11511111 8888A888
-26 11511151 A888A888
-27 51511151 A888A8A8
-28 51515151 A8A8A8A8
-29 51555151 A8AAA8A8
-30 51555155 A8AAA8AA
-31 55555155 A8AAAAAA
+17 00010000 00010000
+18 00010001 00010001
+19 01010001 00010101
+20 01010101 01010101
+21 01110101 01011101
+22 01110111 11011101
+23 11110111 11011111
+24 11111111 11111111
+25 11511111 11111511
+26 11511151 15111511
+27 51511151 15111515
+28 51515151 15151515
+29 51555151 15155515
+30 51555155 55155515
+31 55555155 55155555
 ```
-The 5 bit number made from `m` as the high bit and `t` as the low bits is the index into the above table. Sample each bit in the table entry from 31 down to 0 circularly for each line rendered. When in _shrink_ mode the sprite line after the current line will be skipped if the bit is set and in _grow_ mode the current line will be duplicated if the bit is set. If not set the next line is rendered as normal.
+The 5 bit number made from `m` as the high bit and `t` as the low bits is the index into the above table.
+
+For unflipped sprites sample each bit in the table entry from 31 down to 0 circularly for each line rendered. When in _shrink_ mode the sprite line after the current line will be skipped if the bit is set and in _grow_ mode the current line will be duplicated if the bit is set. If not set the next line is rendered as normal.
+
+Vertically flipped sprites start sampling the zoom table entry at the bit number given by the low 5 bits of the sprite height. If the height is 32, for example, zoom table sampling will start at bit 0 and continue as for normal sprites above.
 
 Vertically flipped sprites terminate one line early in _shrink_ mode if the zoom bit is set on the last line. This only happens for vertically flipped sprites, unflipped sprites render the last line as expected.
 
