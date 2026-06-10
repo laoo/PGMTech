@@ -130,7 +130,7 @@ Work RAM usage:
 
 | address range | description |
 | :-- | :-- |
-| `$900000-$903fff` | definition of 64*64 [background layer](#background-tiles-layer), 2 words each tile |
+| `$900000-$900fff` | definition of 64*16 [background layer](#background-tiles-layer), 2 words each tile |
 | `$904000-$905fff` | definition of 64*32 [text layer](#foreground-text-layer), 2 words each character |
 | `$907000-$9077ff` | [row scroll RAM](#background-tilemap-scrolling) |
 
