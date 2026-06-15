@@ -758,7 +758,7 @@ Bit 15 of the A ROM is physically unconnected on the CHAR PCB.
 * http://www.igspgm.com/iq132/data1.htm
 * https://github.com/mamedev/mame/tree/master/src/mame/igs
 * https://github.com/finalburnneo/FBNeo/tree/master/src/burn/drv/pgm
-* https://github.com/wickerwaka/Arcade-IGSPGM_MiSTer — MiSTer FPGA core RTL; latch / NMI / bus-control wiring in `rtl/igs026_x.sv`
+* https://github.com/wickerwaka/Arcade-IGSPGM_MiSTer
 * https://www.arcade-projects.com/threads/pgm-cartridge-pinout.13847/
 * https://www.arcade-projects.com/threads/pgm-mvs-homebrew.24335/
 
