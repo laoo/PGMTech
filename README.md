@@ -3,6 +3,7 @@
 * [Overview](#overview)
 * [68000 memory map](#68000-memory-map)
 * [Z80 memory map](#z80-memory-map)
+* [Main CPU ↔ Z80 communication](#main-cpu--z80-communication)
 * [Video chip operation](#video-chip-operation)
 * [Audio chip operation](#audio-chip-operation)
 * [Cartridge pinout](#cartridge-pinout)
@@ -187,12 +188,12 @@ Work RAM usage:
 
 | address range | | description |
 | :-- | :--: | :-- | 
-| `$c00002-$c00003`| R/W | sound latch 1 |
-| `$c00004-$c00005`| R/W | sound latch 2 |
+| `$c00002-$c00003`| R/W | [sound latch 1](#sound-latches); main-CPU write asserts Z80 `/NMI` |
+| `$c00004-$c00005`| R/W | [sound latch 2](#sound-latches) |
 | `$c00006-$c00007`| R/W | calendar |
-| `$c00008-$c00009`| W/O | Z80 reset |
-| `$c0000a-$c0000b`| W/O | Z80 control |
-| `$c0000c-$c0000d`| R/W | sound latch 3 |
+| `$c00008-$c00009`| R/W | [Z80 reset](#bus-arbitration): `$a659` halts, `$5050` runs |
+| `$c0000a-$c0000b`| R/W | [Z80 bus control](#bus-arbitration): `$45d3` grants the Z80 RAM bus to the main CPU |
+| `$c0000c-$c0000d`| R/W | [sound latch 3](#sound-latches) |
 
 ### I/O regs
 
@@ -294,10 +295,96 @@ The whole Z80 address space is occupied by RAM, that is populated by main CPU.
 
 | address range | description |
 | :-- | :-- |
-| `$8000-$8003`| ICS 2115 Interface |
-| `$8100-$81ff`| sound latch 3 |
-| `$8200-$82ff`| sound latch 1 |
-| `$8400-$84ff`| sound latch 2 |
+| `$8000-$8003`| ICS 2115 interface (4 registers) |
+| `$8100-$81ff`| [sound latch 3](#sound-latches) |
+| `$8200-$82ff`| [sound latch 1](#sound-latches); Z80 read clears `/NMI` |
+| `$8400-$84ff`| [sound latch 2](#sound-latches) |
+
+## Main CPU ↔ Z80 communication
+
+The Z80 is a sound coprocessor with no ROM of its own: its entire address space is
+RAM that the main CPU populates. Three hardware primitives connect the two CPUs:
+
+* the [shared Z80 RAM window](#shared-z80-ram-window) (plus [bus arbitration](#bus-arbitration)) for uploading code and data,
+* three [sound latches](#sound-latches) for short messages,
+* the Z80 [NMI and INT](#interrupts) lines for signalling.
+
+Everything above these — command formats, mailboxes, handshakes — is software
+convention layered on top of these primitives.
+
+### Shared Z80 RAM window
+
+The main CPU sees the 64 kB of Z80 RAM through the `$c10000-$c1ffff` window (see
+[Z80 RAM](#z80-ram)). The window is 16-bit while the Z80 is byte addressed, so a
+byte stream written by the main CPU is laid out as:
+
+* **even** Z80 address → **high** byte (`[15:8]`) of the main-CPU word,
+* **odd** Z80 address → **low** byte (`[7:0]`).
+
+So when uploading Z80 code or data, byte 0 goes in the high half of the first
+word, byte 1 in the low half, byte 2 in the high half of the second word, and so
+on. The main CPU can only access this RAM while it owns the bus (see below).
+
+### Bus arbitration
+
+The Z80 RAM is shared, so the main CPU must take the bus from the Z80 before
+touching the window and give it back afterwards. Two registers drive this:
+
+| register | value | effect |
+| :-- | :-- | :-- |
+| `$c00008` Z80 reset | `$a659` | assert Z80 reset (halt) |
+| | `$5050` | release Z80 reset (run); also pulses the ICS2115 reset |
+| `$c0000a` Z80 bus control | `$45d3` | request the Z80 RAM bus for the main CPU (asserts `BUSRQ`) |
+| | other (eg. `$0a0a`) | leave the Z80 running |
+
+Writing `$45d3` to `$c0000a` asserts the Z80 `BUSRQ`. The Z80 finishes its current
+machine cycle, tri-states its address / data / control buses and asserts `BUSAK`;
+only then does the main CPU own the `$c10000` window. Writing any other value (eg.
+`$0a0a`) releases `BUSRQ`; the Z80 reclaims its buses and resumes from the exact
+instruction it was paused on — taking the bus this way is non-destructive.
+
+There are two acquisition paths:
+
+* **Z80 held in reset** (`$c00008 = $a659`): the bus is granted immediately,
+  because a reset Z80 is not running and cannot acknowledge. Used while uploading
+  the driver.
+* **Z80 running**: the main CPU must wait for `BUSAK` before the window is valid.
+  As there is no ready flag to poll, drivers insert a short fixed delay after
+  writing `$45d3`. Used to poke RAM while the sound driver runs.
+
+A typical upload is therefore: assert reset and request the bus → fill / write Z80
+RAM → release the bus, then release reset to start the Z80 from `$0000`.
+
+### Sound latches
+
+Three 16-bit latch registers are shared between the main CPU and the Z80. Each is a
+single register, readable **and** writable from both sides; the hardware enforces
+no direction, so producer / consumer roles are purely software convention. The Z80
+sees only the low byte.
+
+| latch | main CPU | Z80 I/O | hardware side effect |
+| :-- | :-- | :-- | :-- |
+| 1 | `$c00002` | `$8200` | main-CPU **write** asserts Z80 `/NMI`; Z80 **read** clears it |
+| 2 | `$c00004` | `$8400` | none |
+| 3 | `$c0000c` | `$8100` | none |
+
+Only latch 1 has a side effect, which makes it the natural "doorbell": the main
+CPU writes a command (or a token) to `$c00002`, the resulting `/NMI` wakes the Z80,
+and the Z80 reads `$8200` to both consume the value and clear the interrupt.
+Latches 2 and 3 are plain shared bytes with no signalling.
+
+### Interrupts
+
+The Z80 has two interrupt sources, conventionally used under interrupt mode 1:
+
+| line | vector | source |
+| :-- | :-- | :-- |
+| `/NMI` | `$0066` | main-CPU write to sound latch 1 (`$c00002`); cleared by Z80 read of `$8200` |
+| `/INT` | `$0038` | ICS2115 `IRQ` line |
+
+So the maskable interrupt belongs to the sound chip, while the non-maskable
+interrupt belongs to the host. A driver typically handles incoming main-CPU
+commands in the `/NMI` handler and ICS2115 events in the `/INT` handler.
 
 ## Video chip operation
 
@@ -675,6 +762,7 @@ Bit 15 of the A ROM is physically unconnected on the CHAR PCB.
 * http://www.igspgm.com/iq132/data1.htm
 * https://github.com/mamedev/mame/tree/master/src/mame/igs
 * https://github.com/finalburnneo/FBNeo/tree/master/src/burn/drv/pgm
+* https://github.com/wickerwaka/Arcade-IGSPGM_MiSTer — MiSTer FPGA core RTL; latch / NMI / bus-control wiring in `rtl/igs026_x.sv`
 * https://www.arcade-projects.com/threads/pgm-cartridge-pinout.13847/
 * https://www.arcade-projects.com/threads/pgm-mvs-homebrew.24335/
 
