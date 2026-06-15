@@ -283,10 +283,6 @@ fedcba9876543210
 
 With the QC mode dip switch set, you can hold A+B when turning on the PGM to access the QC test menu. QC menu options are selected by pressing 1P START rather than 1P A as with the normal operator test menu. You can also hold B+C down in QC mode when turning on the PGM to access cartridge-dependent additional test elements (eg. protection ASIC test, tile ROM test).
 
-### Z80 RAM
-
-The range `$c10000-$c1ffff` maps to the Z80 RAM. The Z80 executes code from this 64 kB area, which can be uploaded by the 68000 as needed (eg. load additional sequence data)
-
 ## Z80 memory map
 
 The whole Z80 address space is occupied by RAM, that is populated by main CPU.
