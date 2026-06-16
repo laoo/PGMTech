@@ -697,11 +697,9 @@ Each voice plays a sample by advancing a 20.9 fixed-point position accumulator
 part addresses the sample; the 9-bit fraction drives linear interpolation between adjacent
 samples. The full ROM address is `(saddr << 20) | (acc >> 12)`, with `saddr` from
 `OscSAddr ($11)`, which selects a 1 MB bank; the 20-bit accumulator addresses within it and
-does not carry into `saddr`, so a single sample is confined to one 1 MB bank. Playback
-bounds are `OscStrtH/L ($02-$03)` (start) and `OscEndH/L ($04-$05)` (end).
-
-On reaching the end the oscillator loops, reflects (bidirectional), or — with looping
-disabled — stops the voice and clamps to the boundary. A boundary can also raise an
+does not carry into `saddr`, so a single sample is confined to one 1 MB bank. Playback starts
+from the value written to accumulator (`OscAccH/L ($0a-$0b)`), on reaching the end the oscillator loops, reflects (bidirectional), or — with looping disabled — stops the voice and clamps to the boundary
+defined by `OscStrtH/L ($02-$03)` (start) and `OscEndH/L ($04-$05)` (end). Reaching a boundary can also raise an
 interrupt.
 
 #### OscConf (`$00`)
@@ -766,7 +764,7 @@ the top 4 mantissa bits):
 
 Low values are silent; `$00`-`$01` are effectively silence. The ramp drives `VolAcc` from
 `VStart << 8` to `VEnd << 8`; `VolAcc`'s low byte and the bits below add finer position the
-endpoints cannot express.
+endpoints cannot express. Similarly to sample position the initial volume value must be written to `VolAcc`.
 
 #### VIncr (`$06`)
 
