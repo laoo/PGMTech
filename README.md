@@ -24,7 +24,7 @@ From a programmer's perspective, the important components located on the motherb
 * [2 MB tile graphics ROM](#text--tiles-t-rom)
 * 2 MB audio samples data ROM
 * [128 kB main CPU work RAM](#main-work-ram)
-* [64 kB Z80 work RAM](#z80-ram)
+* [64 kB Z80 work RAM](#z80-memory-map)
 * [video](#video-ram) / [palette RAM](#palette-ram)
 
 ### Cartridge
@@ -39,7 +39,7 @@ From a programmer's perspective, the important components located on the motherb
 
 [Bottom board](#bottom-char-board) contains:
  * 8 bit `M` ROM with audio samples data with 24 bit address space (max 16 MB)
- * 16 bit [`B` ROM](#sprite-bitmask-b-rom) with sprite pixel masks and pixel color offsets with 23 bit address space (max 16 MB)
+ * 16 bit [`B` ROM](#bitmask-b-rom) with sprite pixel masks and pixel color offsets with 23 bit address space (max 16 MB)
  * 15 bit [`A` ROM](#sprite-color-a-rom) with sprite pixel color data with 25 bit address space (max 64 MB)
 
 ### Logical components layout
@@ -48,7 +48,7 @@ The main CPU is memory-mapped into its address-space: BIOS, work RAM, video / pa
 
 The secondary CPU has access to its work RAM, main CPU interface and sound chip interface.
 
-[The video chip](#video-chip-operation) has access to [video](#video-ram) / [palette](#palette-ram) RAM, internal 2 MB of [tile data ROM](#text--tiles-t-rom), and external [`T`](#text--tiles-t-rom), [`B`](#sprite-bitmask-b-rom) and [`A`](#sprite-color-a-rom) ROMs 
+[The video chip](#video-chip-operation) has access to [video](#video-ram) / [palette](#palette-ram) RAM, internal 2 MB of [tile data ROM](#text--tiles-t-rom), and external [`T`](#text--tiles-t-rom), [`B`](#bitmask-b-rom) and [`A`](#sprite-color-a-rom) ROMs 
 
 The sound chip has access to internal 2 MB audio samples ROM and external `M` ROM
 
@@ -65,7 +65,7 @@ The sound chip has access to internal 2 MB audio samples ROM and external `M` RO
 | `$b00000-$b0ffff` | `$0f0000` | [video registers](#video-registers)
 | `$c00000-$c0000f` | `$0e7ff0` | [Z80 interface and RTC regs](#z80-interface-and-rtc-regs)
 | `$c08000-$c08007` | `$0e7ff8` | [I/O regs](#io-regs)
-| `$c10000-$c1ffff` | `$0e0000` | [Z80 RAM](#z80-ram)
+| `$c10000-$c1ffff` | `$0e0000` | [Z80 RAM](#z80-memory-map)
 | `$d00000-$ffffff` |- | Cartridge-dependent add-ons
 
 ### Internal BIOS
@@ -140,7 +140,7 @@ Work RAM usage:
 | address range | description |
 | :-- | :-- |
 | `$a00000-$a007ff` | 32 * 2 bytes x 32 [sprite](#sprites-layer) [palettes](#palettes) |
-| `$a00800-$a00fff` | 32 * 2 bytes x 32 [background](#background-tile-layer) [palettes](#palettes) |
+| `$a00800-$a00fff` | 32 * 2 bytes x 32 [background](#background-tiles-layer) [palettes](#palettes) |
 | `$a01000-$a011ff` | 16 * 2 bytes x 32 [text](#foreground-text-layer) [palettes](#palettes) |
 | `$a01200-$a01fff` | unused palette RAM |
 
@@ -156,7 +156,7 @@ Work RAM usage:
 | `$b05000-$b05001` | [text](#foreground-text-layer) scroll up |
 | `$b06000-$b06001` | [text](#foreground-text-layer) scroll left |
 | `$b07000-$b07001` | [screen](#video-chip-operation) scanline, R/O |
-| `$b0e000-$b0e001` | [control flags](#`$b0e000`-control-flags) |
+| `$b0e000-$b0e001` | [control flags](#b0e000-control-flags) |
 
 #### `$b0e000` Control flags
 
@@ -291,7 +291,7 @@ The whole Z80 address space is occupied by RAM, that is populated by main CPU.
 
 | address range | description |
 | :-- | :-- |
-| `$8000-$8003`| ICS 2115 interface (4 registers) |
+| `$8000-$8003`| [ICS 2115 interface](#host-interface) (4 registers) |
 | `$8100-$81ff`| [sound latch 3](#sound-latches) |
 | `$8200-$82ff`| [sound latch 1](#sound-latches); Z80 read clears `/NMI` |
 | `$8400-$84ff`| [sound latch 2](#sound-latches) |
@@ -311,7 +311,7 @@ convention layered on top of these primitives.
 ### Shared Z80 RAM window
 
 The main CPU sees the 64 kB of Z80 RAM through the `$c10000-$c1ffff` window (see
-[Z80 RAM](#z80-ram)). The window is 16-bit while the Z80 is byte addressed, so a
+[Z80 RAM](#z80-memory-map)). The window is 16-bit while the Z80 is byte addressed, so a
 byte stream written by the main CPU is laid out as:
 
 * **even** Z80 address → **high** byte (`[15:8]`) of the main-CPU word,
@@ -376,7 +376,7 @@ The Z80 has two interrupt sources, conventionally used under interrupt mode 1:
 | line | vector | source |
 | :-- | :-- | :-- |
 | `/NMI` | `$0066` | main-CPU write to sound latch 1 (`$c00002`); cleared by Z80 read of `$8200` |
-| `/INT` | `$0038` | ICS2115 `IRQ` line |
+| `/INT` | `$0038` | [ICS2115](#audio-chip-operation) `IRQ` line |
 
 So the maskable interrupt belongs to the sound chip, while the non-maskable
 interrupt belongs to the host. A driver typically handles incoming main-CPU
@@ -421,7 +421,7 @@ Text layer is defined with 5-bit palette index for each character with 4-bit col
 
 ### Background tiles layer
 
-Background tiles layer is displayed unless it is disabled with [control flags register](#`$b0e000`-control-flags).
+Background tiles layer is displayed unless it is disabled with [control flags register](#b0e000-control-flags).
 
 #### Background tile format
 
@@ -539,7 +539,7 @@ Vertically flipped sprites terminate one line early in _shrink_ mode if the zoom
 
 ### Foreground text layer
 
-The foreground text layer is logically the same as the background layer but the tile (or character) size is 8x8 pixels and limited to 16 colours per tile. It can be too disabled with [control flags register](#`$b0e000`-control-flags).
+The foreground text layer is logically the same as the background layer but the tile (or character) size is 8x8 pixels and limited to 16 colours per tile. It can be too disabled with [control flags register](#b0e000-control-flags).
 
 #### Character tilemap
 
@@ -586,6 +586,315 @@ Sprite colour information is stored as 5 bits per pixel and packed into 3 pixels
 Bit 15 of the A ROM is physically unconnected on the CHAR PCB.
 
 ## Audio chip operation
+
+The ICS2115 WaveFront is a wavetable synthesizer with 32 voices. It reads sample data
+from the `M` ROM, applies a per-voice volume envelope and pan, and mixes
+the voices to a stereo DAC. The Z80 drives it through four I/O ports; samples play back
+from mask ROM (the chip's DMA channel is unused on PGM).
+
+### Host interface
+
+The chip is reached through four [Z80 I/O](#z80-io-map) ports. Registers are accessed
+indirectly: the register number is written to the select port, then its data is read or
+written on the data ports.
+
+| address | | description |
+| :-- | :--: | :-- |
+| `$8000` | R/O | [IRQ / status register](#8000-status-register) |
+| `$8001` | R/W | register-number select |
+| `$8002` | R/W | data low byte, or full 16-bit word |
+| `$8003` | R/W | data high byte |
+
+The chip's registers are internally 16-bit, accessed in halves. The byte lane follows the
+register bank, the boundary being `$40`:
+
+* synthesizer registers `$00-$3F` carry 8-bit data in the **high** byte (`$8003`); this
+  includes the global `ActiveOsc ($0e)` / `IRQV ($0f)`,
+* general registers `$40-$7F` carry 8-bit data in the **low** byte (`$8002`),
+* 16-bit registers span both halves: low byte on `$8002`, high byte on `$8003`.
+
+The select port latches the register number until overwritten, so consecutive data
+accesses hit the same register. The status **busy** bit is unreliable on PGM; drivers do
+not poll it and instead space accesses with a short fixed delay.
+
+#### `$8000` Status register
+
+```
+7.5.3210
+│ │ │││└─ $01: timer IRQ pending
+│ │ ││└── $02: voice IRQ pending (oscillator or volume ramp)
+│ │ │└─── $04: DMA IRQ (unused on PGM)
+│ │ └──── $08: emulation IRQ (unused on PGM)
+│ └────── $40: busy — unreliable on PGM
+└──────── $80: any IRQ active
+```
+
+### Clock and sample rate
+
+The chip runs at **33.8688 MHz** (`= 768 × 44.1 kHz`). One synthesis pipeline is
+time-multiplexed across the voices, 32 cycles each, so the sample rate depends on the
+active voice count held in `ActiveOsc ($0e)`:
+
+```
+sample_rate = 33.8688 MHz / ((active_osc + 1) × 32)
+```
+
+| active voices | `ActiveOsc ($0e)` | sample rate |
+| :-: | :-: | :-: |
+| 32 | `$1f` | 33 075 Hz |
+| 24 | `$17` | 44 100 Hz |
+
+The rate is global and also sets pitch — `playback_freq = fc × sample_rate / 1024` — so
+changing `ActiveOsc ($0e)` retunes every voice; it is set once at init. PGM uses 32 voices.
+
+### Register map
+
+Only the registers used on PGM are listed here. The oscillator and volume registers are
+**per voice** (one multiplexed set): the voice number is written to `OscNumber ($4f)`
+before they are accessed. The remaining registers are global.
+
+Oscillator registers (per voice):
+
+| register | mnemonic | description |
+| :-- | :-- | :-- |
+| `$00` | `OscConf` | [oscillator configuration](#oscconf-00) |
+| `$01` | `OscFC` | playback frequency, 6.9 fixed point |
+| `$02-$03` | `OscStrtH/L` | loop start address, high / low |
+| `$04-$05` | `OscEndH/L` | loop end address, high / low |
+| `$0a-$0b` | `OscAccH/L` | current sample address, high / low |
+| `$10` | `OscCtl` | key on (`$00`) / key off (`$0f`) |
+| `$11` | `OscSAddr` | sample bank (`saddr`) |
+
+Volume and envelope registers (per voice):
+
+| register | mnemonic | description |
+| :-- | :-- | :-- |
+| `$06` | `VIncr` | [volume ramp increment](#vincr-06) |
+| `$07` | `VStart` | volume ramp start, [`EEEEMMMM`](#volume-scale) |
+| `$08` | `VEnd` | volume ramp end, [`EEEEMMMM`](#volume-scale) |
+| `$09` | `VolAcc` | current volume, logarithmic |
+| `$0c` | `OscPan` | pan: `$00` left, `$ff` right, `$7f` centre |
+| `$0d` | `VCtl` | [volume ramp control](#vctl-0d) |
+| `$12` | `VMode` | volume-envelope step law, `[1:0]` (see [VIncr](#vincr-06)) |
+
+Global registers:
+
+| register | mnemonic | | description |
+| :-- | :-- | :--: | :-- |
+| `$0e` | `ActiveOsc` | R/W | active voices: `$1f` = 32 voices |
+| `$0f` | `IRQV` | R/O | [interrupt source](#audio-interrupts) |
+| `$40-$41` | `Timer1/2` | R/W | timer 1 / 2 preset; a read clears that timer's IRQ |
+| `$42` | `Timer1PreS` | W/O | timer 1 prescaler |
+| `$43` | `Timer2PreS_S` | R/W | timer 2 prescaler (W) / [timer status](#timers) (R) |
+| `$4a` | `DOCIntCS` | W/O | master timer IRQ enable (`$01`) |
+| `$4d` | `SysCtrl` | R/W | system control; bits 0 & 2 = master run gate (must be set) |
+| `$4f` | `OscNumber` | W/O | voice select: the voice number precedes per-voice register access |
+
+### Oscillator
+
+Each voice plays a sample by advancing a 20.9 fixed-point position accumulator
+(`OscAccH/L ($0a-$0b)`) at a rate set by the frequency counter `OscFC ($01)`. The integer
+part addresses the sample; the 9-bit fraction drives linear interpolation between adjacent
+samples. The full ROM address is `(saddr << 20) | (acc >> 12)`, with `saddr` from
+`OscSAddr ($11)`, which selects a 1 MB bank; the 20-bit accumulator addresses within it and
+does not carry into `saddr`, so a single sample is confined to one 1 MB bank. Playback
+bounds are `OscStrtH/L ($02-$03)` (start) and `OscEndH/L ($04-$05)` (end).
+
+On reaching the end the oscillator loops, reflects (bidirectional), or — with looping
+disabled — stops the voice and clamps to the boundary. A boundary can also raise an
+interrupt.
+
+#### OscConf (`$00`)
+
+```
+76543.10
+│││││ └┴─ $03: sample format (see below)
+││││└──── $08: loop enable
+│││└───── $10: bidirectional loop
+││└────── $20: oscillator boundary IRQ enable
+│└─────── $40: reverse playback direction
+└──────── $80: oscillator IRQ pending (hardware)
+```
+
+The format field `[1:0]` selects the sample type:
+
+| `[1:0]` | format |
+| :-: | :-- |
+| `00` | 8-bit linear |
+| `01` | µ-law |
+| `10` | 16-bit linear |
+| `11` | white noise |
+
+Format `11` is a free-running noise generator: it ignores ROM and emits an LFSR value whose pitch tracks `OscFC ($01)`.
+
+### Volume, pan, envelope
+
+The volume engine runs on a **26-bit accumulator** whose value is the **logarithm of loudness**,
+so adding a constant step gives a perceptually even (dB-linear) ramp. A per-voice ramp sweeps it
+between `VStart ($07)` and `VEnd ($08)` by adding the `VIncr ($06)` step each tick; software builds
+ADSR by chaining ramp segments via the volume IRQ. `OscPan ($0c)` attenuates one channel before the
+final amplitude. PGM output is monophonic, though — the main board sums the chip's two channels (see
+[mixing](#mixing-and-output)) — so pan only sets a voice's level in the mono mix (centre = both
+channels, hard pan = one), not a stereo position.
+
+#### Volume scale
+
+After the ramp, the final loudness reads the accumulator's **top 12 bits** as a float — the top 4
+bits are the exponent, the next 8 the mantissa:
+
+```
+amplitude ≈ (256 + mantissa) × 2^exponent / 512
+```
+
+Each register reaches the accumulator from the top:
+
+| field | accumulator bits | |
+| :-- | :-- | :-- |
+| exponent | `[25:22]` | top 4 bits |
+| mantissa | `[21:14]` | next 8 bits — with the exponent, the 12-bit amplitude index |
+| `VolAcc ($09)` | `[25:10]` | top 16 bits — host read / write |
+| `VStart` / `VEnd` | `[25:18]` | top 8 bits — ramp endpoints |
+
+So `VStart` / `VEnd` are the high byte of `VolAcc`, written as 8-bit `EEEEMMMM` (exponent nibble +
+the top 4 mantissa bits):
+
+```
+76543210
+└──┤└──┴─ $0f: mantissa (top 4 of the 8 index mantissa bits)
+   └───── $f0: exponent — each step ≈ doubling (~6 dB)
+```
+
+Low values are silent; `$00`-`$01` are effectively silence. The ramp drives `VolAcc` from
+`VStart << 8` to `VEnd << 8`; `VolAcc`'s low byte and the bits below add finer position the
+endpoints cannot express.
+
+#### VIncr (`$06`)
+
+A single 8-bit value setting the volume-envelope step added to `VolAcc ($09)` each tick.
+`VMode ($12)` selects how the value maps to a step:
+
+| `VMode ($12)[1:0]` | law | step | step LSB |
+| :-: | :-- | :-- | :-: |
+| `00` | exponential, slow | `2^(VIncr / 32)` | bit 0 |
+| `10` | linear | `VIncr << 10` | bit 10 |
+| `01` / `11` | exponential, fast | `2^((VIncr + 256) / 32)` — ×256 vs `00` | bit 8 |
+
+In the exponential laws every `+32` in `VIncr` doubles the step (32 sub-steps per octave); larger
+steps ramp the volume faster. `VMode[1]` is a no-op there (`01` ≡ `11`). The **step LSB** column is
+the lowest accumulator bit a mode reaches: `00` accumulates at the full 26-bit resolution (down to
+bit 0), `10` only at the host-visible top 16 bits (bit 10). A step large enough to overflow
+`VolAcc ($09)` wraps it back below `VEnd`, so the boundary check is missed and the ramp free-runs
+instead of stopping.
+
+#### VCtl (`$0d`)
+
+```
+76543210
+│││││││└─ $01: ramp done (hardware sets on completion)
+││││││└── $02: stop ramp
+│││││└─── $04: rollover (read below)
+││││└──── $08: ramp loop enable
+│││└───── $10: bidirectional ramp
+││└────── $20: volume ramp IRQ enable
+│└─────── $40: ramp direction — 0 up, 1 down
+└──────── $80: volume ramp IRQ pending (hardware)
+```
+
+`rollover` (bit 2) is a software-settable flag that the hardware clears when the volume ramp
+reaches its boundary (`VEnd` / `VStart`), which makes it a synchronisation signal. The BIOS uses
+it for voice teardown: it sets the bit, collapses the ramp (`VStart ($07) = VEnd ($08)`) so the
+boundary is reached at once, then polls bit 2 until the hardware clears it — confirming the
+engine has serviced the voice.
+
+### Programming a voice
+
+A voice is programmed in this order:
+
+1. the voice is selected through `OscNumber ($4f)`;
+2. `OscCtl ($10) = $0f` stops it;
+3. oscillator registers: `OscFC ($01)` frequency, `OscSAddr ($11)` bank, `OscAccH/L ($0a-$0b)` start position, `OscStrtH/L ($02-$03)` start, `OscEndH/L ($04-$05)` end;
+4. volume / pan: `OscPan ($0c)` pan, `VIncr ($06)` increment, `VStart ($07)` start, `VEnd ($08)` end, `VolAcc ($09)` current;
+5. `OscConf ($00)` configuration (format + loop), `VCtl ($0d)` ramp control;
+6. `OscCtl ($10) = $00` keys it on.
+
+### Chip initialization
+
+The init sequence is:
+
+* `SysCtrl ($4d)` bits 0 and 2 form the **master run gate** — until both are set the output
+  is muted to silence, so they must be enabled;
+* `ActiveOsc ($0e) = $1f` — 32 active voices (33.075 kHz);
+* per voice: `OscCtl ($10) = $0f` (stop), `OscConf ($00) = $00`, `VCtl ($0d) = $03` (ramp stopped), `VStart ($07) = VEnd ($08) = $01` (silent);
+* `DOCIntCS ($4a) = $01` enables the master IRQ gate.
+
+The PGM BIOS wraps this in a longer `SysCtrl ($4d)` / `MemCfg_Rev ($4c)` dance whose remaining
+bits are undocumented; reproducing it is the safe option on real hardware.
+
+### Audio interrupts
+
+The ICS2115 `IRQ` line drives the Z80 maskable [`/INT`](#interrupts) (`$0038`). It is
+**level-sensitive**: asserted while any enabled source is pending —
+`(enabled system source) | per-voice (enable & pending)` over all voices.
+
+`IRQV ($0f)` reports the first pending voice and is polled until it returns `$ff`:
+
+```
+76543210
+│││└───┴─ $1f: interrupting voice number
+││└────── $20: always 1
+│└─────── $40: clear = volume-ramp IRQ on this voice
+└──────── $80: clear = oscillator IRQ on this voice
+```
+
+Clearing the pending bit alone does not acknowledge a voice IRQ: if the source condition
+persists, the level interrupt re-asserts at once. The enable bit must be cleared as well
+(`OscConf ($00) &= ~$a0` / `VCtl ($0d) &= ~$a0`), or the voice stopped. `DOCIntCS ($4a)`
+is the master timer IRQ gate.
+
+### Timers
+
+Two programmable timers raise periodic interrupts, counting down at the master clock
+(`≈ 29.5 ns` per tick) while the run gate (`SysCtrl ($4d)` bits 0 & 2) is set. Each has an
+8-bit preset (`Timer1 ($40)` / `Timer2 ($41)`) and an 8-bit prescaler; the two use
+**different** period formulas:
+
+```
+Timer 1:  period = ((mult + 1) × (preset + 1)) << (4 + shift)    master-clock ticks
+Timer 2:  period =              (preset + 1)    << (4 + shift)
+```
+
+Timer 2 ignores the prescaler multiplier. Achievable periods: Timer 1 ≈ **1.9 µs … 495 ms**,
+Timer 2 ≈ **0.95 µs … 15.5 ms**. The `mult` and `shift` fields share the prescaler byte but
+mean different things.
+
+`Timer1PreS ($42)`:
+
+```
+76543210
+│ │└───┴─ $1f: mult — period × (n + 1); Timer 1 also counts only when non-zero
+└─┴────── $e0: shift — period × 2^(4 + n)
+```
+
+`Timer2PreS_S ($43)` — write:
+
+```
+76543210
+│ │││└─┴─ $07: unused
+│ ││└──── $08: Timer 1 IRQ enable
+│ │└───── $10: Timer 2 enable + IRQ enable
+└─┴────── $e0: shift — Timer 2 period × 2^(4 + n)
+```
+
+A **read** of `$43` returns the status: bits `[1:0]` = each timer's IRQ pending. Timers
+auto-reload; a timer's IRQ is cleared by a read of its preset (`$40` / `$41`).
+
+### Mixing and output
+
+Each voice contributes `sample × volume (after pan)` (shifted down to normalise) unless it has
+been stopped (`OscCtl ($10)` key-off). The contributing voices are summed in a wider
+accumulator — which gives headroom for many voices — and the sum is saturated to 16-bit stereo.
+The chip's DAC output is a serial, MSB-first, left/right-multiplexed stream (`BCK = XTLI / 4`);
+on PGM the main board sums these left and right channels into a single mono signal.
 
 ## Cartridge pinout
 
