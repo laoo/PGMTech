@@ -403,7 +403,7 @@ Graphics of each layer is palettized with each own individual palette. Each [til
 #### Palette format
 ```
 .rrrrrgggggbbbbb
- └───┤└───┤└───┴─ $001f: blue color componentenlarges
+ └───┤└───┤└───┴─ $001f: blue color component
      │    └────── $03e0: green color component
      └─────────── $7c00: red color component
 ```
