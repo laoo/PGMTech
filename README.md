@@ -135,6 +135,8 @@ Work RAM usage:
 | `$904000-$905fff` | definition of 64*32 [text layer](#foreground-text-layer), 2 words each character |
 | `$907000-$9077ff` | [row scroll RAM](#background-tilemap-scrolling) |
 
+The IGS023 controls CPU access to video RAM. During the horizontal blanking period all of the text layer RAM for the current scanline is read, then during the visible portion of the scanline the background layer RAM is accessed as needed. The current row scroll value is read during the horizontal sync pulse, briefly interrupting the text layer reads. Normally the IGS023 will de-assert the 68000's `DTACK` if the CPU tries to access video RAM while the IGS023 is accessing it, this will cause the CPU to stall until the IGS023 is done. Setting bit `$0400` of the `$b0e000` control flags disables this behavior, giving the CPU priority access to video RAM. While this does allow for faster CPU access, it does cause visual artifacts because the IGS023 will read whatever value is at the address the CPU is pointing to. It does not pause it's processing while the CPU is accessing the video RAM.
+
 ### Palette RAM
 
 | address range | description |
@@ -143,6 +145,8 @@ Work RAM usage:
 | `$a00800-$a00fff` | 32 * 2 bytes x 32 [background](#background-tiles-layer) [palettes](#palettes) |
 | `$a01000-$a011ff` | 16 * 2 bytes x 32 [text](#foreground-text-layer) [palettes](#palettes) |
 | `$a01200-$a01fff` | unused palette RAM |
+
+68000 CPU access to palette RAM goes through the IGS023, however the CPU has priority access. Reading or writing to palette RAM during the visible part of the frame will cause visual artifacts on screen because the IGS023 will read whatever color value the CPU is currently accessing instead of the real value it wants to display. Games typically update palette data during the vertical blank to avoid this. You can see what this looks like by running the memory test in the BIOS.
 
 ### Video Registers
 
@@ -161,15 +165,16 @@ Work RAM usage:
 #### `$b0e000` Control flags
 
 ```
-..dcb.98765432.0
-  │││ │││└┤│││ └─ $0001: sprite dma enable - pulse 0->1 to trigger
-  │││ │││ │││└─── $0004: irq4 clear to ack, set to enable. Triggered every 62 scanlines (3.968 ms), not synced to VBL
-  │││ │││ ││└──── $0008: irq6 clear to ack, set to enable. Triggered each VBL
-  │││ │││ │└───── $0010: ? all games set this
-  │││ │││ └────── $0060: ? all games except CAVE set this, but seems to serve no purpose
-  │││ ││└──────── $0080: ? causes system to lose video synch
-  │││ │└───────── $0100: ? shows garbage on screen for all except background
-  │││ └────────── $0200: ? disable everything except background layer
+..dcba98765432.0
+  │││││││└┤│││ └─ $0001: sprite dma enable - pulse 0->1 to trigger
+  │││││││ │││└─── $0004: irq4 clear to ack, set to enable. Triggered every 62 scanlines (3.968 ms), not synced to VBL
+  │││││││ ││└──── $0008: irq6 clear to ack, set to enable. Triggered each VBL
+  │││││││ │└───── $0010: ? all games set this
+  │││││││ └────── $0060: ? all games except CAVE set this, but seems to serve no purpose
+  ││││││└──────── $0080: ? causes system to lose video synch
+  │││││└───────── $0100: ? shows garbage on screen for all except background
+  ││││└────────── $0200: ? disable everything except background layer
+  │││└─────────── $0400: prioritize CPU access to video RAM
   ││└──────────── $0800: disable text layer
   │└───────────── $1000: disable background layer
   └────────────── $2000: disable high priority sprites
