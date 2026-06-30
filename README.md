@@ -700,8 +700,8 @@ Global registers:
 Each voice plays a sample by advancing a 20.9 fixed-point position accumulator
 (`OscAccH/L ($0a-$0b)`) at a rate set by the frequency counter `OscFC ($01)`. The integer
 part addresses the sample; the 9-bit fraction drives linear interpolation between adjacent
-samples. The full ROM address is `(saddr << 20) | (acc >> 12)`, with `saddr` from
-`OscSAddr ($11)`, which selects a 1 MB bank; the 20-bit accumulator addresses within it and
+samples. The full ROM address is `(saddr << 20) | (acc >> 9)`, with `saddr` from
+`OscSAddr ($11)`, which selects a 1 MB bank; the 20-bit index addresses within it and
 does not carry into `saddr`, so a single sample is confined to one 1 MB bank. Playback starts
 from the value written to accumulator (`OscAccH/L ($0a-$0b)`), on reaching the end the oscillator loops, reflects (bidirectional), or — with looping disabled — stops the voice and clamps to the boundary
 defined by `OscStrtH/L ($02-$03)` (start) and `OscEndH/L ($04-$05)` (end). Reaching a boundary can also raise an
