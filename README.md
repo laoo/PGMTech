@@ -1071,6 +1071,7 @@ on PGM the main board sums these left and right channels into a single mono sign
 * https://github.com/mamedev/mame/tree/master/src/mame/igs
 * https://github.com/finalburnneo/FBNeo/tree/master/src/burn/drv/pgm
 * https://github.com/wickerwaka/Arcade-IGSPGM_MiSTer
+* https://github.com/mister-devel/Arcade-IGSPGM_MiSTer
 * https://www.arcade-projects.com/threads/pgm-cartridge-pinout.13847/
 * https://www.arcade-projects.com/threads/pgm-mvs-homebrew.24335/
 
